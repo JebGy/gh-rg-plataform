@@ -1,26 +1,201 @@
 @import "tailwindcss";
 
+/* ─── Stripi Design System Tokens ────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary / Indigo */
+  --color-primary:              #533afd;
+  --color-primary-deep:         #4434d4;
+  --color-primary-press:        #2e2b8c;
+  --color-primary-soft:         #665efd;
+  --color-primary-bg-hover:     #b9b9f9;
+
+  /* Brand Dark Navy */
+  --color-brand-dark:           #1c1e54;
+
+  /* Ink / Text */
+  --color-ink:                  #0d253d;
+  --color-ink-secondary:        #273951;
+  --color-ink-mute:             #64748d;
+  --color-ink-mute-2:           #61718a;
+  --color-on-primary:           #ffffff;
+
+  /* Surfaces */
+  --color-canvas:               #ffffff;
+  --color-canvas-soft:          #f6f9fc;
+  --color-canvas-cream:         #f5e9d4;
+
+  /* Borders */
+  --color-hairline:             #e3e8ee;
+  --color-hairline-input:       #a8c3de;
+
+  /* Accents */
+  --color-ruby:                 #ea2261;
+  --color-magenta:              #f96bee;
+  --color-lemon:                #9b6829;
+  --color-shadow-blue:          #003770;
+
+  /* Radius */
+  --radius-xs:    4px;
+  --radius-sm:    6px;
+  --radius-md:    8px;
+  --radius-lg:    12px;
+  --radius-xl:    16px;
+  --radius-pill:  9999px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--color-canvas);
+  --color-foreground: var(--color-ink);
+  --font-sans: "SF Pro Display", system-ui, -apple-system, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ─── Base ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: 16px; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+  font-weight: 300;
+  font-feature-settings: "ss01";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Atmospheric Gradient Mesh ──────────────────────────────────── */
+.atmospheric-mesh {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(83, 58, 253, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 80% 20%,  rgba(249, 107, 238, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 20% 10%,  rgba(28, 30, 84, 0.10) 0%, transparent 65%),
+    var(--color-canvas-soft);
+}
+
+/* ─── Typography Utilities ───────────────────────────────────────── */
+.text-display-xxl {
+  font-size: 56px; font-weight: 300; line-height: 1.03;
+  letter-spacing: -1.4px; font-feature-settings: "ss01";
+}
+.text-display-xl {
+  font-size: 48px; font-weight: 300; line-height: 1.15;
+  letter-spacing: -0.96px; font-feature-settings: "ss01";
+}
+.text-display-lg {
+  font-size: 32px; font-weight: 300; line-height: 1.1;
+  letter-spacing: -0.64px; font-feature-settings: "ss01";
+}
+.text-display-md {
+  font-size: 26px; font-weight: 300; line-height: 1.12;
+  letter-spacing: -0.26px; font-feature-settings: "ss01";
+}
+.text-heading-lg {
+  font-size: 22px; font-weight: 300; line-height: 1.1;
+  letter-spacing: -0.22px; font-feature-settings: "ss01";
+}
+.text-heading-md {
+  font-size: 20px; font-weight: 300; line-height: 1.4;
+  letter-spacing: -0.2px; font-feature-settings: "ss01";
+}
+.text-heading-sm {
+  font-size: 18px; font-weight: 300; line-height: 1.4;
+  font-feature-settings: "ss01";
+}
+.text-body-lg {
+  font-size: 16px; font-weight: 300; line-height: 1.4;
+  font-feature-settings: "ss01";
+}
+.text-body-md {
+  font-size: 15px; font-weight: 300; line-height: 1.4;
+  font-feature-settings: "ss01";
+}
+.text-tabular {
+  font-size: 14px; font-weight: 300; line-height: 1.4;
+  letter-spacing: -0.42px; font-feature-settings: "tnum";
+}
+.text-caption {
+  font-size: 13px; font-weight: 400; line-height: 1.4;
+  letter-spacing: -0.39px; font-feature-settings: "tnum";
+}
+.text-micro {
+  font-size: 11px; font-weight: 300; line-height: 1.4;
+  font-feature-settings: "ss01";
+}
+.text-micro-cap {
+  font-size: 10px; font-weight: 400; line-height: 1.15;
+  letter-spacing: 0.1px; font-feature-settings: "ss01";
+}
+
+/* ─── Button Pill ─────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: var(--radius-pill);
+  padding: 10px 22px;
+  font-size: 15px; font-weight: 400; line-height: 1;
+  font-feature-settings: "ss01";
+  border: none; cursor: pointer;
+  transition: background-color 120ms ease, transform 80ms ease;
+}
+.btn-primary:hover  { background-color: var(--color-primary-deep); }
+.btn-primary:active { background-color: var(--color-primary-press); transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center;
+  background-color: var(--color-canvas);
+  color: var(--color-primary);
+  border-radius: var(--radius-pill);
+  padding: 9px 21px;
+  font-size: 15px; font-weight: 400; line-height: 1;
+  font-feature-settings: "ss01";
+  border: 1.5px solid var(--color-primary);
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.btn-secondary:hover { background-color: var(--color-primary-bg-hover); }
+
+/* ─── Pill Tag ────────────────────────────────────────────────────── */
+.pill-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  background-color: var(--color-primary-bg-hover);
+  color: var(--color-primary-deep);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: 10px; font-weight: 400; line-height: 1.15;
+  letter-spacing: 0.1px; font-feature-settings: "ss01";
+}
+
+/* ─── Form Inputs ─────────────────────────────────────────────────── */
+.input-field {
+  width: 100%;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  border: 1.5px solid var(--color-hairline-input);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 15px; font-weight: 300; line-height: 1.4;
+  font-feature-settings: "ss01";
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.input-field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(83, 58, 253, 0.12);
+}
+.input-field.tnum { font-feature-settings: "tnum"; letter-spacing: -0.42px; }
+
+/* ─── Cards ───────────────────────────────────────────────────────── */
+.card-light {
+  background: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+}
+.card-dark {
+  background: var(--color-brand-dark);
+  border-radius: var(--radius-xl);
+  padding: 24px;
 }

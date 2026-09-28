@@ -1,0 +1,39 @@
+// use prisma-next
+
+model Position {
+  id          Int       @id @default(autoincrement())
+  title       String
+  slug        String    @unique
+  department  String    @default("Izaje – Antamina")
+  location    String    @default("Huaraz")
+  description String?
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   TimestamptzString     @default(now())
+  updatedAt   temporal.updatedAtString()
+  candidates  Candidate[]
+
+  @@map("positions")
+}
+
+model Candidate {
+  id             String    @id @default(uuid())
+  positionId     Int
+  position       Position  @relation(fields: [positionId], references: [id], onDelete: Restrict)
+  fullName       String
+  dni            String
+  phone          String
+  email          String?
+  licenseNumber  String?
+  residenceCity  String
+  availability   String
+  status         String    @default("nuevo")
+  recruiterNotes String?
+  createdAt      TimestamptzString  @default(now())
+  updatedAt      temporal.updatedAtString()
+
+  @@index([dni])
+  @@index([positionId])
+  @@index([status])
+  @@map("candidates")
+}
