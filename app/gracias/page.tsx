@@ -1,62 +1,83 @@
 import Link from "next/link";
-import { CheckCircle2, Phone, Share2 } from "lucide-react";
+import { CheckCircle2, Phone, Share2, ArrowRight } from "lucide-react";
 
 export default function GraciasPage() {
   const shareText =
-    "Convocatoria de trabajo en Huaraz – Servicio de Izaje Antamina. Puestos: Supervisor Operativo, Supervisor de Seguridad, Operador de Camión Grúa y Rigger. Regístrate ahora.";
+    "Convocatoria de personal para Ramirez Group — Servicio de Izaje en Mina Antamina (Huaraz). Puestos: Supervisor Operativo, Supervisor de Seguridad, Operador de Camión Grúa y Rigger. Regístrate aquí:";
   const shareUrl = process.env.NEXT_PUBLIC_APP_URL || "https://tu-app.vercel.app";
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-5 py-12"
-      style={{ backgroundColor: "var(--color-canvas-soft)" }}>
-      <div className="card-light max-w-md w-full text-center">
-        {/* Icon */}
-        <div
-          className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
-          style={{ backgroundColor: "rgba(83,58,253,0.1)" }}
-        >
-          <CheckCircle2 size={28} style={{ color: "var(--color-primary)" }} aria-hidden="true" />
+    <div className="flex min-h-[100dvh] flex-col bg-zinc-50">
+      {/* Header Institucional */}
+      <header className="border-b border-zinc-200 bg-white">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+          <Link href="/" className="flex items-center gap-3">
+            <img
+              src="https://ramirezgroup.com.pe/wp-content/uploads/2023/06/logo-RAMIREZ-GROUP.png"
+              alt="Ramirez Group"
+              className="h-8 w-auto object-contain"
+            />
+            <span className="text-xs font-semibold text-zinc-500 border-l border-zinc-200 pl-3">
+              Convocatoria Operativa
+            </span>
+          </Link>
         </div>
+      </header>
 
-        <h1 className="text-display-md mb-2" style={{ color: "var(--color-ink)" }}>
-          ¡Postulación enviada!
-        </h1>
-        <p className="text-body-md mb-6" style={{ color: "var(--color-ink-secondary)" }}>
-          Gracias por registrarte. El equipo de reclutamiento revisará tu información y se comunicará contigo si tu perfil se ajusta a los requerimientos del servicio de Izaje Antamina.
-        </p>
+      <main className="flex-1 flex items-center justify-center p-6 py-16">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-8 md:p-12 max-w-lg w-full text-center shadow-xs">
+          {/* Badge Ícono de Éxito */}
+          <div className="w-16 h-16 rounded-2xl bg-[rgba(43,160,122,0.1)] text-[var(--brand-primary)] flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 size={36} aria-hidden="true" />
+          </div>
 
-        {/* Divider */}
-        <div className="border-t mb-6" style={{ borderColor: "var(--color-hairline)" }} />
-
-        <div
-          className="flex items-start gap-3 p-4 rounded-xl mb-6 text-left"
-          style={{ backgroundColor: "var(--color-canvas-soft)", borderRadius: "var(--radius-lg)" }}
-        >
-          <Phone size={16} style={{ color: "var(--color-primary)", flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
-          <p className="text-body-md" style={{ color: "var(--color-ink-secondary)" }}>
-            Te contactaremos vía <strong>WhatsApp o llamada</strong> al número que registraste.
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--brand-primary)] mb-1">
+            Registro Completado
           </p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 mb-3">
+            ¡Postulación enviada exitosamente!
+          </h1>
+          <p className="text-sm text-zinc-600 leading-relaxed mb-8">
+            Sus datos han sido incorporados a la base de candidatos de <strong>Ramirez Group</strong> para el servicio de Izaje en Mina Antamina.
+          </p>
+
+          {/* Bloque Informativo */}
+          <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-left mb-6 flex items-start gap-3">
+            <div className="p-2 rounded-lg bg-white border border-zinc-200 text-[var(--brand-primary)] flex-shrink-0 mt-0.5">
+              <Phone size={18} aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-zinc-900">Siguiente Paso</p>
+              <p className="text-xs text-zinc-600 mt-0.5 leading-normal">
+                El equipo de Recursos Humanos (Sheila / Geovanna) se comunicará por llamada o WhatsApp al número indicado si su perfil califica.
+              </p>
+            </div>
+          </div>
+
+          {/* Botón WhatsApp Compartir */}
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(shareText + "\n\n" + shareUrl)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary w-full py-3 text-sm flex items-center justify-center gap-2 mb-3 shadow-xs"
+          >
+            <Share2 size={16} aria-hidden="true" />
+            Compartir convocatoria por WhatsApp
+          </a>
+
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-600 hover:text-zinc-900 mt-3 transition-colors"
+          >
+            <span>Volver al portal principal</span>
+            <ArrowRight size={13} aria-hidden="true" />
+          </Link>
         </div>
+      </main>
 
-        {/* Share */}
-        <a
-          href={`https://wa.me/?text=${encodeURIComponent(shareText + "\n\n" + shareUrl)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-secondary w-full flex items-center justify-center gap-2 mb-3"
-        >
-          <Share2 size={15} aria-hidden="true" />
-          Compartir convocatoria en WhatsApp
-        </a>
-
-        <Link
-          href="/"
-          className="text-body-md block text-center mt-2"
-          style={{ color: "var(--color-primary)" }}
-        >
-          Volver al inicio
-        </Link>
-      </div>
-    </main>
+      <footer className="border-t border-zinc-200 bg-white py-6 text-center text-xs text-zinc-500">
+        © {new Date().getFullYear()} Ramirez Group. Todos los derechos reservados.
+      </footer>
+    </div>
   );
 }

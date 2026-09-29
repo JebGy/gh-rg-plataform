@@ -31,13 +31,19 @@ export default async function PuestosPage() {
     }));
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-heading-lg" style={{ color: "#fff" }}>Gestión de Puestos y Convocatorias</h1>
-        <p className="text-body-md mt-1" style={{ color: "var(--color-ink-mute)" }}>
-          Crea nuevos puestos para futuras campañas o activa/desactiva los existentes. Los inactivos se ocultan de inmediato en el formulario público.
+    <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-6">
+      <div className="bg-white p-6 rounded-xl border border-zinc-200">
+        <span className="badge-tag mb-1">
+          Catálogo Operativo
+        </span>
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
+          Gestión de Cargos y Convocatorias
+        </h1>
+        <p className="text-sm text-zinc-600 mt-0.5">
+          Active o desactive puestos para la campaña en Huaraz, o cree nuevos perfiles según las necesidades del servicio de Izaje en Antamina.
         </p>
       </div>
+
       <PositionManager positions={positions} />
     </div>
   );

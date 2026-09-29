@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createPosition, togglePosition } from "@/lib/actions/positions";
-import { Plus, Loader2, Users, ToggleLeft, ToggleRight, Briefcase } from "lucide-react";
+import { Plus, Loader2, Users, ToggleLeft, ToggleRight, Briefcase, Check } from "lucide-react";
 
 type Position = {
   id: number;
@@ -39,113 +39,145 @@ export default function PositionManager({ positions }: { positions: Position[] }
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Existing positions list */}
-      {positions.map((p) => (
+    <div className="space-y-4">
+      {/* ── Lista de Puestos en Cards Modulares ───────────────────── */}
+      {positions.map((p, i) => (
         <div
           key={p.id}
-          className="rounded-xl p-4 flex items-center gap-4 transition-all"
-          style={{
-            backgroundColor: p.isActive ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.02)",
-            border: `1px solid ${p.isActive ? "rgba(255,255,255,0.09)" : "rgba(255,255,255,0.04)"}`,
-          }}
+          className={`rounded-xl border p-4 sm:p-5 flex items-center justify-between gap-4 transition-all bg-white ${
+            p.isActive ? "border-zinc-200 shadow-2xs" : "border-zinc-200 bg-zinc-50/60 opacity-75"
+          }`}
         >
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <p className="text-body-lg" style={{ color: p.isActive ? "#fff" : "var(--color-ink-mute)", fontWeight: 500 }}>
-                {p.title}
-              </p>
-              {!p.isActive ? (
-                <span className="text-micro-cap px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: "rgba(234,34,97,0.15)", color: "#ea2261" }}>
-                  Inactivo
+          <div className="flex items-start gap-3.5 min-w-0 flex-1">
+            {/* Número de índice destacado visualmente en la parte superior */}
+            <span
+              className={`flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold flex-shrink-0 mt-0.5 ${
+                p.isActive
+                  ? "bg-[rgba(43,160,122,0.12)] text-[var(--brand-primary)]"
+                  : "bg-zinc-200 text-zinc-500"
+              }`}
+            >
+              {String(i + 1).padStart(2, "0")}
+            </span>
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <span className="text-base font-bold text-zinc-900">{p.title}</span>
+                {!p.isActive ? (
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-red-50 text-red-700 border border-red-200">
+                    Inactivo en Formulario
+                  </span>
+                ) : (
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Activo para Postulación
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500">
+                <span>{p.department}</span>
+                <span>·</span>
+                <span>{p.location}</span>
+                <span>·</span>
+                <span className="inline-flex items-center gap-1 font-semibold text-zinc-700">
+                  <Users size={12} aria-hidden="true" />
+                  {p.candidateCount} postulante{p.candidateCount !== 1 ? "s" : ""}
                 </span>
-              ) : (
-                <span className="text-micro-cap px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: "rgba(37,211,102,0.15)", color: "#25d366" }}>
-                  Activo
-                </span>
+              </div>
+
+              {p.description && (
+                <p className="text-xs text-zinc-600 mt-1.5 leading-normal">
+                  {p.description}
+                </p>
               )}
             </div>
-            <div className="flex flex-wrap gap-3 text-micro" style={{ color: "var(--color-ink-mute)" }}>
-              <span>{p.department}</span>
-              <span>·</span>
-              <span>{p.location}</span>
-              <span>·</span>
-              <span className="flex items-center gap-1 font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>
-                <Users size={12} aria-hidden="true" /> {p.candidateCount} postulante{p.candidateCount !== 1 ? "s" : ""}
-              </span>
-            </div>
-            {p.description && (
-              <p className="text-micro mt-1" style={{ color: "var(--color-ink-mute-2)" }}>
-                {p.description}
-              </p>
-            )}
           </div>
+
+          {/* Switch de Activación */}
           <button
             onClick={() => handleToggle(p.id, p.isActive)}
             disabled={isPending}
-            className="flex items-center gap-1.5 text-micro rounded-full px-3.5 py-1.5 transition-all hover:opacity-90"
-            style={{
-              backgroundColor: p.isActive ? "rgba(37,211,102,0.15)" : "rgba(255,255,255,0.06)",
-              color: p.isActive ? "#25d366" : "var(--color-ink-mute)",
-              border: `1px solid ${p.isActive ? "#25d36640" : "rgba(255,255,255,0.1)"}`,
-              fontSize: "13px",
-              fontWeight: 500,
-            }}
+            className={`flex items-center gap-1.5 text-xs font-semibold rounded-md px-3 py-1.5 border transition-all ${
+              p.isActive
+                ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
+                : "bg-zinc-100 text-zinc-600 border-zinc-300 hover:bg-zinc-200"
+            }`}
           >
             {p.isActive ? <ToggleRight size={16} aria-hidden="true" /> : <ToggleLeft size={16} aria-hidden="true" />}
-            {p.isActive ? "Activo" : "Inactivo"}
+            <span>{p.isActive ? "Activo" : "Inactivo"}</span>
           </button>
         </div>
       ))}
 
-      {/* New position form */}
+      {/* ── Formulario de Nuevo Puesto ────────────────────────────── */}
       {showForm ? (
         <form
           action={handleCreate}
-          className="rounded-xl p-5 mt-2"
-          style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}
+          className="rounded-xl border border-zinc-200 bg-white p-6 shadow-xs"
         >
-          <div className="flex items-center gap-2 mb-4">
-            <Briefcase size={16} style={{ color: "var(--color-primary-soft)" }} aria-hidden="true" />
-            <p className="text-body-lg" style={{ color: "#fff", fontWeight: 500 }}>Crear Nuevo Puesto / Convocatoria</p>
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-zinc-100">
+            <Briefcase size={18} className="text-[var(--brand-primary)]" aria-hidden="true" />
+            <h3 className="text-base font-bold text-zinc-900">Crear Nuevo Cargo Convocado</h3>
           </div>
-          <div className="flex flex-col gap-3">
+
+          <div className="space-y-4">
             <div>
-              <label className="text-caption block mb-1" style={{ color: "rgba(255,255,255,0.7)" }}>Nombre del puesto *</label>
-              <input name="title" placeholder="Ej. Operador de Manlift, Mecánico de Mantenimiento" required className="input-field"
-                style={{ backgroundColor: "rgba(255,255,255,0.08)", color: "#fff", borderColor: "rgba(255,255,255,0.18)" }} />
+              <label className="form-label">Nombre del puesto *</label>
+              <input
+                name="title"
+                placeholder="Ej. Operador de Manlift, Mecánico de Mantenimiento..."
+                required
+                className="form-input"
+              />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-caption block mb-1" style={{ color: "rgba(255,255,255,0.7)" }}>Servicio / Proyecto</label>
-                <input name="department" defaultValue="Izaje – Antamina" className="input-field"
-                  style={{ backgroundColor: "rgba(255,255,255,0.08)", color: "#fff", borderColor: "rgba(255,255,255,0.18)" }} />
+                <label className="form-label">Servicio / Proyecto</label>
+                <input
+                  name="department"
+                  defaultValue="Izaje – Antamina"
+                  className="form-input"
+                />
               </div>
               <div>
-                <label className="text-caption block mb-1" style={{ color: "rgba(255,255,255,0.7)" }}>Ubicación</label>
-                <input name="location" defaultValue="Huaraz / Mina Antamina" className="input-field"
-                  style={{ backgroundColor: "rgba(255,255,255,0.08)", color: "#fff", borderColor: "rgba(255,255,255,0.18)" }} />
+                <label className="form-label">Ubicación de Operación</label>
+                <input
+                  name="location"
+                  defaultValue="Huaraz / Mina Antamina"
+                  className="form-input"
+                />
               </div>
             </div>
+
             <div>
-              <label className="text-caption block mb-1" style={{ color: "rgba(255,255,255,0.7)" }}>Descripción / Requisitos clave</label>
-              <textarea name="description" placeholder="Brevetes requeridos, certificaciones, experiencia en minería…" rows={2}
-                className="input-field resize-none"
-                style={{ backgroundColor: "rgba(255,255,255,0.08)", color: "#fff", borderColor: "rgba(255,255,255,0.18)" }} />
+              <label className="form-label">Descripción y Requisitos (opcional)</label>
+              <textarea
+                name="description"
+                rows={2}
+                placeholder="Brevete requerido, experiencia en minería, certificaciones técnicas..."
+                className="form-input resize-none"
+              />
             </div>
+
             {formError && (
-              <p className="text-micro" style={{ color: "var(--color-ruby)" }}>{formError}</p>
+              <p className="text-xs font-semibold text-red-600">{formError}</p>
             )}
-            <div className="flex gap-2 justify-end mt-2">
-              <button type="button" onClick={() => setShowForm(false)} className="btn-secondary px-4 py-2"
-                style={{ borderColor: "rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.8)", fontSize: "13px" }}>
+
+            <div className="flex gap-2.5 justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="btn-secondary text-xs py-2 px-3.5"
+              >
                 Cancelar
               </button>
-              <button type="submit" className="btn-primary px-5 py-2 flex items-center gap-1.5" style={{ fontSize: "13px" }}>
-                {isPending ? <Loader2 size={13} className="animate-spin" aria-hidden="true" /> : <Plus size={14} aria-hidden="true" />}
-                Guardar Puesto
+              <button
+                type="submit"
+                className="btn-primary text-xs py-2 px-4 flex items-center gap-1.5"
+              >
+                {isPending ? <Loader2 size={14} className="animate-spin" aria-hidden="true" /> : <Plus size={14} aria-hidden="true" />}
+                <span>Guardar Cargo</span>
               </button>
             </div>
           </div>
@@ -153,10 +185,10 @@ export default function PositionManager({ positions }: { positions: Position[] }
       ) : (
         <button
           onClick={() => setShowForm(true)}
-          className="btn-primary flex items-center gap-2 self-start px-5 py-2.5 mt-2"
+          className="btn-primary text-sm py-2.5 px-4 flex items-center gap-2"
         >
           <Plus size={16} aria-hidden="true" />
-          Añadir Nuevo Puesto
+          <span>Añadir Nuevo Cargo</span>
         </button>
       )}
     </div>

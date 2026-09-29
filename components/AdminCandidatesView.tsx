@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { updateCandidateStatus } from "@/lib/actions/positions";
 import {
   Search, Phone, Download, Users, MapPin, Zap,
-  ChevronDown, MessageCircle, Check
+  ChevronDown, MessageCircle, Briefcase, FileSpreadsheet
 } from "lucide-react";
 import * as XLSX from "xlsx";
 
@@ -33,12 +33,12 @@ type Props = {
   filters: { positionId?: string; status?: string; q?: string };
 };
 
-const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  nuevo:      { label: "Nuevo",        color: "#533afd", bg: "rgba(83,58,253,0.12)" },
-  contactado: { label: "Contactado",   color: "#a8d8c4", bg: "rgba(168,216,196,0.15)" },
-  evaluando:  { label: "Evaluando",    color: "#f4d35e", bg: "rgba(244,211,94,0.15)" },
-  califica:   { label: "Califica",     color: "#25d366", bg: "rgba(37,211,102,0.15)" },
-  descartado: { label: "Descartado",   color: "#ea2261", bg: "rgba(234,34,97,0.15)" },
+const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string }> = {
+  nuevo:      { label: "Nuevo",        bg: "bg-blue-50",   text: "text-blue-700",   border: "border-blue-200" },
+  contactado: { label: "Contactado",   bg: "bg-amber-50",  text: "text-amber-800",  border: "border-amber-200" },
+  evaluando:  { label: "Evaluando",    bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200" },
+  califica:   { label: "Califica",     bg: "bg-emerald-50",text: "text-emerald-700",border: "border-emerald-200" },
+  descartado: { label: "Descartado",   bg: "bg-red-50",    text: "text-red-700",    border: "border-red-200" },
 };
 
 export default function AdminCandidatesView({ candidates, positions, metrics, filters }: Props) {
@@ -80,235 +80,257 @@ export default function AdminCandidatesView({ candidates, positions, metrics, fi
       DNI: c.dni,
       Celular: c.phone,
       Email: c.email || "",
-      "N° Licencia / Brevete": c.licenseNumber || "",
+      "N° Licencia / Certificación": c.licenseNumber || "",
       "Lugar de Residencia": c.residenceCity,
       Disponibilidad: c.availability,
-      Estado: STATUS_LABELS[c.status]?.label || c.status,
+      Estado: STATUS_CONFIG[c.status]?.label || c.status,
       "Notas Reclutador": c.recruiterNotes || "",
       "Fecha de Registro": new Date(c.createdAt).toLocaleString("es-PE"),
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Base de Candidatos");
-    XLSX.writeFile(wb, `candidatos-izaje-antamina-${Date.now()}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, "Candidatos Ramirez Group");
+    XLSX.writeFile(wb, `candidatos-izaje-ramirez-group-${Date.now()}.xlsx`);
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      {/* ── Header ───────────────────────────────── */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+      {/* ── Header de Gestión ────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-zinc-200">
         <div>
-          <h1 className="text-display-md" style={{ color: "#fff", fontSize: "28px" }}>
-            Base de Datos de Candidatos
+          <span className="badge-tag mb-1">
+            Plataforma de Selección
+          </span>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
+            Base Centralizada de Candidatos
           </h1>
-          <p className="text-body-md mt-1" style={{ color: "var(--color-ink-mute)" }}>
-            Campaña de Reclutamiento Huaraz · Servicio de Izaje Antamina
+          <p className="text-sm text-zinc-600 mt-0.5">
+            Campaña Huaraz · Servicio de Izaje – Mina Antamina
           </p>
         </div>
+
         <button
           onClick={exportToExcel}
-          className="btn-primary flex items-center gap-2 px-5 py-2.5"
-          style={{ fontSize: "14px" }}
+          className="btn-primary py-2.5 px-4 text-sm flex items-center gap-2 self-start sm:self-auto"
         >
-          <Download size={15} aria-hidden="true" />
-          Descargar Excel Completo
+          <FileSpreadsheet size={16} aria-hidden="true" />
+          <span>Exportar a Excel (.xlsx)</span>
         </button>
       </div>
 
-      {/* ── Metrics Cards ────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* ── 4.2. Tarjetas Modulares con Enumeración (Métricas) ──────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Total Registrados", value: metrics.total, icon: <Users size={20} aria-hidden="true" style={{ color: "var(--color-primary-soft)" }} /> },
-          { label: "Disponibilidad Inmediata", value: metrics.inmediata, icon: <Zap size={20} aria-hidden="true" style={{ color: "#f96bee" }} /> },
-          { label: "Residentes en Huaraz", value: metrics.huaraz, icon: <MapPin size={20} aria-hidden="true" style={{ color: "#a8d8c4" }} /> },
-          { label: "Puestos Convocados", value: positions.length, icon: <Phone size={20} aria-hidden="true" style={{ color: "var(--color-primary-bg-hover)" }} /> },
+          {
+            idx: "01",
+            label: "Total Postulantes",
+            value: metrics.total,
+            desc: "Registrados en sistema",
+            color: "var(--brand-primary)",
+          },
+          {
+            idx: "02",
+            label: "Disponibilidad Inmediata",
+            value: metrics.inmediata,
+            desc: "Listos para inducción",
+            color: "var(--brand-accent)",
+          },
+          {
+            idx: "03",
+            label: "Zona Huaraz / Áncash",
+            value: metrics.huaraz,
+            desc: "Residencia local",
+            color: "#2563eb",
+          },
+          {
+            idx: "04",
+            label: "Puestos Convocados",
+            value: positions.length,
+            desc: "Perfiles activos",
+            color: "#8b5cf6",
+          },
         ].map((m) => (
           <div
-            key={m.label}
-            className="rounded-xl p-5 flex items-center gap-4"
-            style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+            key={m.idx}
+            className="rounded-xl border border-zinc-200 bg-white p-5 transition-shadow hover:shadow-xs flex flex-col justify-between"
           >
-            <div className="flex-shrink-0">{m.icon}</div>
+            <div className="flex items-center justify-between mb-2">
+              <span
+                className="flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold"
+                style={{ backgroundColor: `${m.color}15`, color: m.color }}
+              >
+                {m.idx}
+              </span>
+              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                Métrica
+              </span>
+            </div>
             <div>
-              <p className="text-display-md" style={{ color: "#fff", fontSize: "28px", fontWeight: 300 }}>{m.value}</p>
-              <p className="text-micro" style={{ color: "var(--color-ink-mute)" }}>{m.label}</p>
+              <p className="text-3xl font-bold text-zinc-900 text-tabular">{m.value}</p>
+              <p className="text-xs font-semibold text-zinc-800 mt-1">{m.label}</p>
+              <p className="text-[11px] text-zinc-500">{m.desc}</p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* ── Filters & Search ─────────────────────── */}
-      <div className="flex flex-wrap items-center gap-3 mb-5">
-        <form onSubmit={handleSearch} className="flex gap-2 flex-1 min-w-48">
+      {/* ── Barra de Búsqueda y Filtros Utilitarios ───────────────── */}
+      <div className="bg-white p-4 rounded-xl border border-zinc-200 flex flex-wrap items-center gap-3">
+        <form onSubmit={handleSearch} className="flex gap-2 flex-1 min-w-[240px]">
           <div className="relative flex-1">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--color-ink-mute)" }} aria-hidden="true" />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" aria-hidden="true" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por nombre, DNI, celular o residencia…"
-              className="w-full pl-8 pr-3 py-2 rounded-full text-body-md"
-              style={{
-                backgroundColor: "rgba(255,255,255,0.07)", color: "#fff",
-                border: "1px solid rgba(255,255,255,0.1)",
-                outline: "none", fontSize: "14px",
-              }}
+              placeholder="Buscar por nombre, DNI, celular, licencia o ciudad..."
+              className="form-input pl-10 text-sm py-2"
             />
           </div>
-          <button type="submit" className="btn-primary px-4 py-2" style={{ fontSize: "13px" }}>Buscar</button>
+          <button type="submit" className="btn-secondary text-xs font-semibold py-2 px-3.5">
+            Filtrar
+          </button>
         </form>
 
-        <select
-          defaultValue={filters.positionId || ""}
-          onChange={(e) => applyFilter("positionId", e.target.value)}
-          className="rounded-full px-4 py-2 text-body-md"
-          style={{
-            backgroundColor: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.9)",
-            border: "1px solid rgba(255,255,255,0.15)", fontSize: "14px", outline: "none",
-          }}
-        >
-          <option value="" style={{ backgroundColor: "var(--color-brand-dark)" }}>Todos los puestos</option>
-          {positions.map((p) => (
-            <option key={p.id} value={p.id} style={{ backgroundColor: "var(--color-brand-dark)" }}>{p.title}</option>
-          ))}
-        </select>
+        <div className="flex flex-wrap gap-2.5">
+          <select
+            defaultValue={filters.positionId || ""}
+            onChange={(e) => applyFilter("positionId", e.target.value)}
+            className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 outline-none focus:border-[var(--brand-primary)]"
+          >
+            <option value="">Todos los puestos</option>
+            {positions.map((p) => (
+              <option key={p.id} value={p.id}>{p.title}</option>
+            ))}
+          </select>
 
-        <select
-          defaultValue={filters.status || ""}
-          onChange={(e) => applyFilter("status", e.target.value)}
-          className="rounded-full px-4 py-2 text-body-md"
-          style={{
-            backgroundColor: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.9)",
-            border: "1px solid rgba(255,255,255,0.15)", fontSize: "14px", outline: "none",
-          }}
-        >
-          <option value="" style={{ backgroundColor: "var(--color-brand-dark)" }}>Todos los estados</option>
-          {Object.entries(STATUS_LABELS).map(([k, v]) => (
-            <option key={k} value={k} style={{ backgroundColor: "var(--color-brand-dark)" }}>{v.label}</option>
-          ))}
-        </select>
+          <select
+            defaultValue={filters.status || ""}
+            onChange={(e) => applyFilter("status", e.target.value)}
+            className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 outline-none focus:border-[var(--brand-primary)]"
+          >
+            <option value="">Todos los estados</option>
+            {Object.entries(STATUS_CONFIG).map(([k, v]) => (
+              <option key={k} value={k}>{v.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {/* ── Candidate Cards ───────────────────────── */}
+      {/* ── Lista de Postulantes en Cards Modulares ───────────────── */}
       {candidates.length === 0 ? (
-        <div className="text-center py-20 rounded-2xl border" style={{ backgroundColor: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)", color: "var(--color-ink-mute)" }}>
-          <Users size={44} className="mx-auto mb-3 opacity-30" aria-hidden="true" />
-          <p className="text-body-lg" style={{ color: "rgba(255,255,255,0.7)" }}>No hay candidatos registrados con los filtros actuales</p>
-          <p className="text-caption mt-1" style={{ color: "var(--color-ink-mute)" }}>Los registros enviados desde el formulario público aparecerán aquí automáticamente.</p>
+        <div className="bg-white rounded-xl border border-zinc-200 p-12 text-center">
+          <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mx-auto mb-3 text-zinc-400">
+            <Users size={24} aria-hidden="true" />
+          </div>
+          <p className="text-base font-bold text-zinc-800">No se encontraron postulantes registrados</p>
+          <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+            Los registros ingresados desde el formulario público aparecerán aquí automáticamente.
+          </p>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="space-y-3">
           {candidates.map((c) => {
             const currentStatus = activeStatus[c.id] ?? c.status;
-            const badge = STATUS_LABELS[currentStatus] ?? STATUS_LABELS.nuevo;
+            const statusStyle = STATUS_CONFIG[currentStatus] ?? STATUS_CONFIG.nuevo;
 
             return (
               <div
                 key={c.id}
-                className="rounded-xl p-4 flex flex-wrap items-start gap-4 transition-all"
-                style={{
-                  backgroundColor: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
+                className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-zinc-300 transition-colors"
               >
-                {/* Left info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                    <p className="text-body-lg" style={{ color: "#fff", fontWeight: 500 }}>{c.fullName}</p>
-                    <span
-                      className="text-micro-cap px-2.5 py-0.5 rounded-full uppercase"
-                      style={{ backgroundColor: badge.bg, color: badge.color, fontWeight: 500 }}
-                    >
-                      {badge.label}
+                {/* Datos del Candidato */}
+                <div className="space-y-2 flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-base font-bold text-zinc-900">{c.fullName}</span>
+                    <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-md border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>
+                      {statusStyle.label}
                     </span>
-                    <span className="text-micro-cap px-2.5 py-0.5 rounded-full"
-                      style={{ backgroundColor: "rgba(83,58,253,0.15)", color: "var(--color-primary-soft)" }}>
+                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-zinc-100 text-zinc-700 border border-zinc-200">
                       {c.positionTitle}
                     </span>
                   </div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2">
-                    <span className="text-tabular" style={{ color: "rgba(255,255,255,0.75)" }}>DNI: <strong>{c.dni}</strong></span>
-                    <span className="text-tabular" style={{ color: "rgba(255,255,255,0.75)" }}>Cel: <strong>{c.phone}</strong></span>
+
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-zinc-600">
+                    <span className="text-tabular">
+                      <strong className="text-zinc-900 font-semibold">DNI:</strong> {c.dni}
+                    </span>
+                    <span className="text-tabular">
+                      <strong className="text-zinc-900 font-semibold">Celular:</strong> {c.phone}
+                    </span>
                     {c.licenseNumber && (
-                      <span className="text-tabular" style={{ color: "rgba(255,255,255,0.75)" }}>Lic: <strong>{c.licenseNumber}</strong></span>
+                      <span className="text-tabular">
+                        <strong className="text-zinc-900 font-semibold">Licencia:</strong> {c.licenseNumber}
+                      </span>
                     )}
-                    <span className="text-micro flex items-center gap-1" style={{ color: "var(--color-ink-mute)" }}>
-                      <MapPin size={11} aria-hidden="true" /> {c.residenceCity}
+                    <span>
+                      <strong className="text-zinc-900 font-semibold">Residencia:</strong> {c.residenceCity}
                     </span>
-                    <span className="text-micro" style={{ color: "var(--color-ink-mute)" }}>
-                      Disp: <strong>{c.availability}</strong>
+                    <span>
+                      <strong className="text-zinc-900 font-semibold">Disp:</strong> {c.availability}
                     </span>
-                    <span className="text-micro" style={{ color: "var(--color-ink-mute-2)" }}>
+                    <span className="text-zinc-400">
                       Reg: {new Date(c.createdAt).toLocaleDateString("es-PE")}
                     </span>
                   </div>
+
                   {c.recruiterNotes && openNotes !== c.id && (
-                    <p className="text-micro italic p-2 rounded-lg" style={{ backgroundColor: "rgba(255,255,255,0.03)", color: "rgba(255,255,255,0.7)" }}>
-                      Nota: {c.recruiterNotes}
-                    </p>
+                    <div className="text-xs text-zinc-700 bg-zinc-50 border border-zinc-200 rounded-md p-2 mt-1 italic">
+                      <strong className="not-italic text-zinc-900 font-semibold">Nota Sheila / Geovanna:</strong> {c.recruiterNotes}
+                    </div>
                   )}
+
                   {openNotes === c.id && (
-                    <div className="mt-2 flex gap-2">
+                    <div className="mt-2 flex gap-2 pt-2 border-t border-zinc-100">
                       <textarea
                         rows={2}
                         defaultValue={c.recruiterNotes || ""}
                         onChange={(e) => setActiveNotes((p) => ({ ...p, [c.id]: e.target.value }))}
-                        placeholder="Observaciones de Sheila / Geovanna / Favio sobre el candidato…"
-                        className="flex-1 rounded-lg px-3 py-2 text-micro resize-none"
-                        style={{
-                          backgroundColor: "rgba(255,255,255,0.07)", color: "#fff",
-                          border: "1px solid rgba(255,255,255,0.15)", fontSize: "13px", outline: "none",
-                        }}
+                        placeholder="Escriba las observaciones del postulante (entrevista, documentos, etc.)..."
+                        className="form-input text-xs flex-1 resize-none"
                       />
-                      <button onClick={() => handleNotesSave(c.id)} className="btn-primary px-4 py-1 self-end" style={{ fontSize: "12px" }}>
+                      <button
+                        onClick={() => handleNotesSave(c.id)}
+                        className="btn-primary text-xs py-1 px-3 self-end"
+                      >
                         Guardar
                       </button>
                     </div>
                   )}
                 </div>
 
-                {/* Right actions */}
-                <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
-                  {/* Status dropdown */}
-                  <div className="relative">
-                    <select
-                      value={currentStatus}
-                      onChange={(e) => handleStatusChange(c.id, e.target.value)}
-                      className="rounded-full pl-3 pr-7 py-1.5 text-micro appearance-none cursor-pointer font-medium"
-                      style={{
-                        backgroundColor: badge.bg, color: badge.color,
-                        border: `1px solid ${badge.color}60`, fontSize: "12px", outline: "none",
-                      }}
-                    >
-                      {Object.entries(STATUS_LABELS).map(([k, v]) => (
-                        <option key={k} value={k} style={{ backgroundColor: "var(--color-brand-dark)", color: "#fff" }}>{v.label}</option>
-                      ))}
-                    </select>
-                    <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: badge.color }} aria-hidden="true" />
-                  </div>
+                {/* Acciones de Contacto y Estado */}
+                <div className="flex items-center gap-2 flex-shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-zinc-100">
+                  {/* Selector de Estado */}
+                  <select
+                    value={currentStatus}
+                    onChange={(e) => handleStatusChange(c.id, e.target.value)}
+                    className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 outline-none cursor-pointer hover:bg-zinc-50 focus:border-[var(--brand-primary)]"
+                  >
+                    {Object.entries(STATUS_CONFIG).map(([k, v]) => (
+                      <option key={k} value={k}>{v.label}</option>
+                    ))}
+                  </select>
 
-                  {/* Notes toggle button */}
+                  {/* Notas del Reclutador */}
                   <button
                     onClick={() => setOpenNotes(openNotes === c.id ? null : c.id)}
-                    className="w-8 h-8 rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
-                    style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
-                    title="Agregar notas de reclutador"
+                    className="p-2 rounded-md border border-zinc-200 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 transition-colors"
+                    title="Añadir nota de reclutamiento"
                   >
-                    <MessageCircle size={14} style={{ color: "rgba(255,255,255,0.8)" }} aria-hidden="true" />
+                    <MessageCircle size={15} aria-hidden="true" />
                   </button>
 
-                  {/* WhatsApp 1-click Contact Button */}
+                  {/* WhatsApp 1-Clic para Sheila / Geovanna */}
                   <a
                     href={`https://wa.me/51${c.phone}?text=${encodeURIComponent(
-                      `Hola ${c.fullName.split(" ")[0]}, te saluda el equipo de Reclutamiento para el servicio de Izaje – Antamina en Huaraz. Hemos revisado tu registro para el puesto de ${c.positionTitle} y queremos coordinar una breve entrevista. ¿Tienes disponibilidad para conversar?`
+                      `Hola ${c.fullName.split(" ")[0]}, te saluda el equipo de Reclutamiento de Ramirez Group. Hemos recibido tu postulación para el puesto de ${c.positionTitle} en el servicio de Izaje – Antamina (Huaraz). Nos gustaría coordinar una breve entrevista. ¿Tienes disponibilidad para conversar?`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full transition-opacity hover:opacity-85"
-                    style={{ backgroundColor: "#25d366", color: "#fff", fontSize: "12px", fontWeight: 500 }}
-                    title="Contactar vía WhatsApp"
+                    className="inline-flex items-center gap-1.5 rounded-md bg-[#25d366] text-white px-3.5 py-1.5 text-xs font-semibold hover:bg-[#20ba59] transition-colors shadow-2xs"
                   >
-                    <Phone size={12} aria-hidden="true" />
-                    WhatsApp
+                    <Phone size={13} aria-hidden="true" />
+                    <span>WhatsApp</span>
                   </a>
                 </div>
               </div>
