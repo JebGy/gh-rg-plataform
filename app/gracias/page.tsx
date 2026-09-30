@@ -3,7 +3,7 @@ import { CheckCircle2, Phone, Share2, ArrowRight } from "lucide-react";
 
 export default function GraciasPage() {
   const shareText =
-    "Convocatoria de personal para Ramirez Group — Servicio de Izaje en Mina Antamina (Huaraz). Puestos: Supervisor Operativo, Supervisor de Seguridad, Operador de Camión Grúa y Rigger. Regístrate aquí:";
+    "Convocatoria de personal para Ramirez Group - Servicio de Izaje en Mina Antamina (Huaraz). Puestos: Supervisor Operativo, Supervisor de Seguridad, Operador de Camión Grúa y Rigger. Regístrate aquí:";
   const shareUrl = process.env.NEXT_PUBLIC_APP_URL || "https://tu-app.vercel.app";
 
   return (

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Convocatoria Operativa Izaje Antamina | Ramirez Group",
     description:
-      "Postula a la convocatoria de personal operativo en Huaraz para el servicio de Izaje – Antamina con Ramirez Group.",
+      "Postula a la convocatoria de personal operativo en Huaraz para el servicio de Izaje - Antamina con Ramirez Group.",
     type: "website",
   },
 };

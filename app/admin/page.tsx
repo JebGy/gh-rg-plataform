@@ -1,26 +1,29 @@
 import { getDb } from "@/lib/prisma";
 import AdminCandidatesView from "@/components/AdminCandidatesView";
+import { getPalfingerRegistrations } from "@/lib/data/palfinger";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ positionId?: string; status?: string; q?: string }>;
+  searchParams: Promise<{ positionId?: string; status?: string; q?: string; tab?: string }>;
 }) {
   const params = await searchParams;
-  const { positionId, status, q } = params;
+  const { positionId, status, q, tab } = params;
 
   const db = await getDb();
 
-  const [rawPositions, rawCandidates] = await Promise.all([
+  const [rawPositions, rawCandidates, palfingerRegistrations] = await Promise.all([
     db.orm.public.Position.all(),
     db.orm.public.Candidate.all(),
+    getPalfingerRegistrations(),
   ]);
 
   const positionsMap = new Map(rawPositions.map((p) => [p.id, p.title]));
 
   // Build candidate list with positionTitle
+
   let candidates = rawCandidates.map((c) => ({
     id: c.id,
     fullName: c.fullName,
@@ -84,7 +87,8 @@ export default async function AdminPage({
       candidates={candidates}
       positions={positionsList}
       metrics={{ total, inmediata, huaraz, byPosition }}
-      filters={{ positionId, status, q }}
+      filters={{ positionId, status, q, tab }}
+      palfingerRegistrations={palfingerRegistrations}
     />
   );
 }
