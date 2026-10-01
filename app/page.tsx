@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PalfingerForm from "@/components/PalfingerForm";
+import FloatingFormButton from "@/components/FloatingFormButton";
 import type { Metadata } from "next";
 import {
   Wrench,
@@ -85,120 +86,6 @@ export default function PalfingerLandingPage() {
           </div>
         </div>
       </header>
-
-      {/* ── SECCIÓN PROCESO DE PARTICIPACIÓN (JUSTO DEBAJO DEL ENCABEZADO) ──────── */}
-      <section
-        id="proceso-participacion"
-        className="border-b border-zinc-800 bg-[#0d0f14] relative z-20 py-8 sm:py-10"
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          {/* Título de la sección y Aviso Claro de que NO es inscripción automática */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-7 pb-5 border-b border-zinc-800/80">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#06BCA3]/10 border border-[#06BCA3]/30 text-[#06BCA3] text-xs font-bold uppercase tracking-wider mb-2">
-                <span className="w-2 h-2 rounded-full bg-[#06BCA3] animate-pulse" />
-                Flujo de Admisión Técnica · Cupos Limitados
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
-                PROCESO DE PARTICIPACIÓN
-              </h2>
-            </div>
-
-            {/* Banner de Aviso de Evaluación */}
-            <div className="flex items-center gap-3.5 rounded-2xl border-2 border-amber-500/50 bg-amber-500/10 px-5 py-3.5 text-amber-200 shadow-md">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0">
-                <AlertTriangle size={22} className="stroke-[2.5]" />
-              </div>
-              <div>
-                <p className="text-xs sm:text-sm font-extrabold text-amber-300 uppercase tracking-wide">
-                  No es una inscripción automática
-                </p>
-                <p className="text-xs text-amber-200/90 leading-tight mt-0.5">
-                  Los cupos son limitados. Cada perfil registrado entra en evaluación técnica según aforo del local.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* 3 Pasos Grandes y Visibles */}
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-            {/* Paso 1 */}
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-lg group">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#06BCA3] text-zinc-950 font-black text-xl shadow-md group-hover:scale-105 transition-transform">
-                    1
-                  </div>
-                  <div className="w-8 h-8 rounded-lg bg-zinc-800 text-[#06BCA3] flex items-center justify-center">
-                    <ClipboardList size={18} />
-                  </div>
-                </div>
-                <div className="text-[11px] font-black uppercase tracking-widest text-[#06BCA3] mb-1">
-                  Paso 01
-                </div>
-                <h3 className="text-lg sm:text-xl font-black uppercase tracking-wide text-white mb-2">
-                  REGÍSTRATE
-                </h3>
-                <p className="text-sm text-zinc-300 leading-relaxed">
-                  Completa el formulario en esta página con tus datos de contacto y experiencia como operador o rigger.
-                </p>
-              </div>
-            </div>
-
-            {/* Paso 2: EVALUACIÓN DE PERFILES (Filtro Técnico Destacado) */}
-            <div className="rounded-2xl border-2 border-[#06BCA3] bg-gradient-to-b from-[#06BCA3]/15 via-zinc-900/90 to-zinc-900 p-6 flex flex-col justify-between relative shadow-xl ring-2 ring-[#06BCA3]/20">
-              <div className="absolute -top-3.5 right-6 bg-[#06BCA3] text-zinc-950 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md">
-                Etapa de Selección
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#06BCA3] text-zinc-950 font-black text-xl shadow-md">
-                    2
-                  </div>
-                  <div className="w-8 h-8 rounded-lg bg-[#06BCA3]/20 text-[#06BCA3] flex items-center justify-center">
-                    <Users2 size={18} />
-                  </div>
-                </div>
-                <div className="text-[11px] font-black uppercase tracking-widest text-[#06BCA3] mb-1">
-                  Paso 02 · Evaluación
-                </div>
-                <h3 className="text-lg sm:text-xl font-black uppercase tracking-wide text-white mb-2">
-                  EVALUACIÓN DE PERFILES
-                </h3>
-                <p className="text-sm text-zinc-200 leading-relaxed font-medium">
-                  Revisaremos la información técnica de los postulantes para seleccionar a los participantes calificados.{" "}
-                  <span className="text-white font-black underline decoration-[#06BCA3]">
-                    No es registro automático.
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            {/* Paso 3 */}
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-lg group">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#06BCA3] text-zinc-950 font-black text-xl shadow-md group-hover:scale-105 transition-transform">
-                    3
-                  </div>
-                  <div className="w-8 h-8 rounded-lg bg-zinc-800 text-[#06BCA3] flex items-center justify-center">
-                    <Mail size={18} />
-                  </div>
-                </div>
-                <div className="text-[11px] font-black uppercase tracking-widest text-[#06BCA3] mb-1">
-                  Paso 03
-                </div>
-                <h3 className="text-lg sm:text-xl font-black uppercase tracking-wide text-white mb-2">
-                  RECIBE TU INVITACIÓN
-                </h3>
-                <p className="text-sm text-zinc-300 leading-relaxed">
-                  Si tu perfil cumple con los criterios técnicos y aforo disponible, te enviaremos la confirmación formal con los detalles del evento.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <main className="flex-1">
         {/* ── 1. HERO SECTION & FORMULARIO (TÍTULO Y DISEÑO EXACTO DEL FLYER) ── */}
@@ -370,6 +257,120 @@ export default function PalfingerLandingPage() {
               <div id="formulario" className="lg:col-span-5 w-full">
                 <div className="rounded-3xl border border-zinc-200 bg-white p-5 sm:p-7 shadow-2xl text-zinc-900">
                   <PalfingerForm />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECCIÓN PROCESO DE PARTICIPACIÓN (JUSTO DEBAJO DEL HERO) ──────── */}
+        <section
+          id="proceso-participacion"
+          className="border-b border-zinc-800 bg-[#0c0e12] relative z-20 py-12 sm:py-16"
+        >
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            {/* Título de la sección y Aviso Claro de que NO es inscripción automática */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10 pb-6 border-b border-zinc-800/80">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#06BCA3]/10 border border-[#06BCA3]/30 text-[#06BCA3] text-xs font-bold uppercase tracking-wider mb-2.5">
+                  <span className="w-2 h-2 rounded-full bg-[#06BCA3]" />
+                  <span>FLUJO DE ADMISIÓN TÉCNICA · CUPOS LIMITADOS</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-white">
+                  PROCESO DE PARTICIPACIÓN
+                </h2>
+              </div>
+
+              {/* Banner de Aviso de Evaluación */}
+              <div className="flex items-center gap-3.5 rounded-2xl border border-amber-500/50 bg-amber-500/10 px-5 py-3.5 text-amber-200 max-w-xl shadow-md">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle size={22} className="stroke-[2.5]" />
+                </div>
+                <div>
+                  <p className="text-xs sm:text-sm font-extrabold text-amber-300 uppercase tracking-wide">
+                    NO ES UNA INSCRIPCIÓN AUTOMÁTICA
+                  </p>
+                  <p className="text-xs text-amber-200/90 leading-tight mt-0.5">
+                    Los cupos son limitados. Cada perfil registrado entra en evaluación técnica según aforo del local.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 3 Pasos Grandes y Visibles */}
+            <div className="grid md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+              {/* Paso 1 */}
+              <div className="rounded-2xl border border-zinc-800 bg-[#14171d] p-6 sm:p-7 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-lg group">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#06BCA3] text-zinc-950 font-black text-xl shadow-md group-hover:scale-105 transition-transform">
+                      1
+                    </div>
+                    <div className="w-9 h-9 rounded-xl bg-zinc-800/80 text-[#06BCA3] flex items-center justify-center">
+                      <ClipboardList size={18} />
+                    </div>
+                  </div>
+                  <div className="text-[11px] font-black uppercase tracking-widest text-[#06BCA3] mb-1">
+                    PASO 01
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-black uppercase tracking-wide text-white mb-2">
+                    REGÍSTRATE
+                  </h3>
+                  <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                    Completa el formulario en esta página con tus datos de contacto y experiencia como operador o rigger.
+                  </p>
+                </div>
+              </div>
+
+              {/* Paso 2: EVALUACIÓN DE PERFILES (Filtro Técnico Destacado con Etapa de Selección) */}
+              <div className="rounded-2xl border-2 border-[#06BCA3] bg-[#14171d] p-6 sm:p-7 flex flex-col justify-between relative shadow-[0_0_30px_rgba(6,188,163,0.12)]">
+                <div className="absolute -top-3 right-6 bg-[#06BCA3] text-zinc-950 text-[10px] font-black uppercase tracking-wider px-3.5 py-0.5 rounded-full shadow-md">
+                  ETAPA DE SELECCIÓN
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#06BCA3] text-zinc-950 font-black text-xl shadow-md">
+                      2
+                    </div>
+                    <div className="w-9 h-9 rounded-xl bg-zinc-800/80 text-[#06BCA3] flex items-center justify-center">
+                      <Users2 size={18} />
+                    </div>
+                  </div>
+                  <div className="text-[11px] font-black uppercase tracking-widest text-[#06BCA3] mb-1">
+                    PASO 02 - EVALUACIÓN
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-black uppercase tracking-wide text-white mb-2">
+                    EVALUACIÓN DE PERFILES
+                  </h3>
+                  <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                    Revisaremos la información técnica de los postulantes para seleccionar a los participantes calificados.{" "}
+                    <span className="text-white font-bold underline decoration-[#06BCA3]">
+                      No es registro automático.
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Paso 3 */}
+              <div className="rounded-2xl border border-zinc-800 bg-[#14171d] p-6 sm:p-7 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-lg group">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#06BCA3] text-zinc-950 font-black text-xl shadow-md group-hover:scale-105 transition-transform">
+                      3
+                    </div>
+                    <div className="w-9 h-9 rounded-xl bg-zinc-800/80 text-[#06BCA3] flex items-center justify-center">
+                      <Mail size={18} />
+                    </div>
+                  </div>
+                  <div className="text-[11px] font-black uppercase tracking-widest text-[#06BCA3] mb-1">
+                    PASO 03
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-black uppercase tracking-wide text-white mb-2">
+                    RECIBE TU INVITACIÓN
+                  </h3>
+                  <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                    Si tu perfil cumple con los criterios técnicos y aforo disponible, te enviaremos la confirmación formal con los detalles del evento.
+                  </p>
                 </div>
               </div>
             </div>
@@ -734,6 +735,9 @@ export default function PalfingerLandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Botón Flotante para ir al Formulario */}
+      <FloatingFormButton />
     </div>
   );
 }
