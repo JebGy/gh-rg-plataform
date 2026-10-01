@@ -249,8 +249,11 @@ export default function PalfingerForm() {
         </div>
         <p className="text-xs text-zinc-600 leading-snug">
           {currentStep === 1
-            ? "Completa tus datos personales para ser parte del proceso de selección técnica."
-            : "Indica tu experiencia en equipos y franja para validar los criterios de participación."}
+            ? "Completa tus datos personales para iniciar la evaluación técnica de tu perfil."
+            : "Indica tu experiencia en equipos para validar los criterios de selección."}
+        </p>
+        <p className="text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200/80 rounded-md px-2 py-1 mt-1.5 inline-block">
+          * Cupos limitados · Sujeto a evaluación técnica y aforo. No es automático.
         </p>
 
         {/* Barra de Progreso */}

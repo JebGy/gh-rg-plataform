@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PalfingerForm from "@/components/PalfingerForm";
+import type { Metadata } from "next";
 import {
   Wrench,
   Truck,
@@ -15,52 +16,57 @@ import {
   Sparkles,
   ArrowRight,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  AlertTriangle,
+  ArrowUpRight,
+  ShieldCheck,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
+export const metadata: Metadata = {
+  title: "Convocatoria Abierta | Capacitación Técnico-Práctica en Operación de Grúas PALFINGER",
+  description:
+    "Capacitación técnico-práctica en operación de grúas PALFINGER dirigida a operadores y riggers con experiencia. Organizan: Ramirez Group, Zapler y PALFINGER.",
+};
+
 export default function PalfingerLandingPage() {
   return (
     <div className="flex min-h-[100dvh] flex-col bg-[#111215] text-white selection:bg-[#06BCA3] selection:text-black">
-      {/* ── HEADER SUPERIOR (CO-BRANDED EXACTO) ────────────────────── */}
+      {/* ── HEADER SUPERIOR (CO-BRANDED OFICIAL CON LOGOS REALES) ────── */}
       <header className="sticky top-0 z-50 border-b border-zinc-800/80 bg-[#111215]/95 backdrop-blur-md">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
-          {/* Logo Ramirez Group (mantenido y ajustado con su rigor) */}
+          {/* Logo Ramirez Group */}
           <Link href="/" className="flex items-center gap-3">
             <img
-              src="https://ramirezgroup.com.pe/wp-content/uploads/2023/06/logo-RAMIREZ-GROUP.png"
+              src="/images/logos/ramirez-group.png"
               alt="Ramirez Group"
               className="h-8 sm:h-9 w-auto object-contain brightness-0 invert"
             />
           </Link>
 
-          {/* Logos Aliados a la Derecha (TBM, Zapler, Palfinger) */}
-          <div className="flex items-center gap-3 sm:gap-5">
-            {/* TBM Maquinarias */}
-            <div className="flex items-center gap-1.5 bg-[#073628] border border-[#0d5943] text-white px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-black tracking-tight">
-              <span className="w-2 h-2 rounded-full bg-[#06BCA3]" />
-              <span>TBM</span>
-              <span className="text-[10px] text-[#06BCA3] font-medium hidden sm:inline">maquinarias</span>
+          {/* Logos Aliados a la Derecha (Zapler, PALFINGER) */}
+          <div className="flex items-center gap-3 sm:gap-6">
+            {/* ZAPLER Logo Oficial */}
+            <div className="flex items-center">
+              <img
+                src="/images/logos/zapler-white.svg"
+                alt="ZAPLER"
+                className="h-6 sm:h-7 w-auto object-contain"
+              />
             </div>
 
-            {/* ZAPLER */}
-            <div className="flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded bg-white text-zinc-950 font-black text-xs">
-                Z
-              </span>
-              <span className="text-xs sm:text-sm font-black tracking-wider text-white uppercase hidden sm:inline">
-                ZAPLER
-              </span>
-            </div>
-
-            {/* PALFINGER (Insignia Amarilla Icónica) */}
-            <div className="bg-[#FFCC00] text-black border border-black/80 font-black text-[11px] sm:text-xs tracking-wider px-2.5 py-0.5 rounded-full uppercase shadow-xs">
-              PALFINGER
+            {/* PALFINGER Logo Oficial */}
+            <div className="flex items-center">
+              <img
+                src="/images/logos/palfinger.svg"
+                alt="PALFINGER"
+                className="h-7 sm:h-8 w-auto object-contain"
+              />
             </div>
 
             {/* Acceso Bolsa Antamina & Admin */}
-            <div className="hidden lg:flex items-center gap-3 pl-3 border-l border-zinc-800 text-xs font-semibold text-zinc-400">
+            <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-zinc-800 text-xs font-semibold text-zinc-400">
               <Link
                 href="/recruitment"
                 className="hover:text-[#06BCA3] transition-colors flex items-center gap-1"
@@ -80,106 +86,282 @@ export default function PalfingerLandingPage() {
         </div>
       </header>
 
+      {/* ── SECCIÓN PROCESO DE PARTICIPACIÓN (JUSTO DEBAJO DEL ENCABEZADO) ──────── */}
+      <section
+        id="proceso-participacion"
+        className="border-b border-zinc-800 bg-[#0d0f14] relative z-20 py-8 sm:py-10"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          {/* Título de la sección y Aviso Claro de que NO es inscripción automática */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-7 pb-5 border-b border-zinc-800/80">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#06BCA3]/10 border border-[#06BCA3]/30 text-[#06BCA3] text-xs font-bold uppercase tracking-wider mb-2">
+                <span className="w-2 h-2 rounded-full bg-[#06BCA3] animate-pulse" />
+                Flujo de Admisión Técnica · Cupos Limitados
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
+                PROCESO DE PARTICIPACIÓN
+              </h2>
+            </div>
+
+            {/* Banner de Aviso de Evaluación */}
+            <div className="flex items-center gap-3.5 rounded-2xl border-2 border-amber-500/50 bg-amber-500/10 px-5 py-3.5 text-amber-200 shadow-md">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle size={22} className="stroke-[2.5]" />
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm font-extrabold text-amber-300 uppercase tracking-wide">
+                  No es una inscripción automática
+                </p>
+                <p className="text-xs text-amber-200/90 leading-tight mt-0.5">
+                  Los cupos son limitados. Cada perfil registrado entra en evaluación técnica según aforo del local.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 3 Pasos Grandes y Visibles */}
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            {/* Paso 1 */}
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-lg group">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#06BCA3] text-zinc-950 font-black text-xl shadow-md group-hover:scale-105 transition-transform">
+                    1
+                  </div>
+                  <div className="w-8 h-8 rounded-lg bg-zinc-800 text-[#06BCA3] flex items-center justify-center">
+                    <ClipboardList size={18} />
+                  </div>
+                </div>
+                <div className="text-[11px] font-black uppercase tracking-widest text-[#06BCA3] mb-1">
+                  Paso 01
+                </div>
+                <h3 className="text-lg sm:text-xl font-black uppercase tracking-wide text-white mb-2">
+                  REGÍSTRATE
+                </h3>
+                <p className="text-sm text-zinc-300 leading-relaxed">
+                  Completa el formulario en esta página con tus datos de contacto y experiencia como operador o rigger.
+                </p>
+              </div>
+            </div>
+
+            {/* Paso 2: EVALUACIÓN DE PERFILES (Filtro Técnico Destacado) */}
+            <div className="rounded-2xl border-2 border-[#06BCA3] bg-gradient-to-b from-[#06BCA3]/15 via-zinc-900/90 to-zinc-900 p-6 flex flex-col justify-between relative shadow-xl ring-2 ring-[#06BCA3]/20">
+              <div className="absolute -top-3.5 right-6 bg-[#06BCA3] text-zinc-950 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md">
+                Etapa de Selección
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#06BCA3] text-zinc-950 font-black text-xl shadow-md">
+                    2
+                  </div>
+                  <div className="w-8 h-8 rounded-lg bg-[#06BCA3]/20 text-[#06BCA3] flex items-center justify-center">
+                    <Users2 size={18} />
+                  </div>
+                </div>
+                <div className="text-[11px] font-black uppercase tracking-widest text-[#06BCA3] mb-1">
+                  Paso 02 · Evaluación
+                </div>
+                <h3 className="text-lg sm:text-xl font-black uppercase tracking-wide text-white mb-2">
+                  EVALUACIÓN DE PERFILES
+                </h3>
+                <p className="text-sm text-zinc-200 leading-relaxed font-medium">
+                  Revisaremos la información técnica de los postulantes para seleccionar a los participantes calificados.{" "}
+                  <span className="text-white font-black underline decoration-[#06BCA3]">
+                    No es registro automático.
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            {/* Paso 3 */}
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 flex flex-col justify-between hover:border-zinc-700 transition-all shadow-lg group">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#06BCA3] text-zinc-950 font-black text-xl shadow-md group-hover:scale-105 transition-transform">
+                    3
+                  </div>
+                  <div className="w-8 h-8 rounded-lg bg-zinc-800 text-[#06BCA3] flex items-center justify-center">
+                    <Mail size={18} />
+                  </div>
+                </div>
+                <div className="text-[11px] font-black uppercase tracking-widest text-[#06BCA3] mb-1">
+                  Paso 03
+                </div>
+                <h3 className="text-lg sm:text-xl font-black uppercase tracking-wide text-white mb-2">
+                  RECIBE TU INVITACIÓN
+                </h3>
+                <p className="text-sm text-zinc-300 leading-relaxed">
+                  Si tu perfil cumple con los criterios técnicos y aforo disponible, te enviaremos la confirmación formal con los detalles del evento.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <main className="flex-1">
-        {/* ── 1. HERO SECTION & FORMULARIO FLOTANTE ─────────────────── */}
+        {/* ── 1. HERO SECTION & FORMULARIO (TÍTULO Y DISEÑO EXACTO DEL FLYER) ── */}
         <section className="relative overflow-hidden bg-[#0d0f12] text-white border-b border-zinc-800">
           {/* Fondo Fotográfico Real con Gradiente Oscuro Adaptativo */}
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-45 pointer-events-none"
+            className="absolute inset-0 bg-cover bg-center opacity-40 pointer-events-none"
             style={{ backgroundImage: `url('/images/palfinger-hero.jpg')` }}
           />
-          {/* Gradiente cinemático: negro sólido a la izquierda, desvanece a la derecha */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0d0f12] via-[#0d0f12]/90 to-[#0d0f12]/30 pointer-events-none" />
+          {/* Gradientes cinemáticos */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0d0f12] via-[#0d0f12]/92 to-[#0d0f12]/40 pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12] via-transparent to-transparent pointer-events-none" />
 
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
             <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-start">
-              {/* Columna Izquierda: Textos del Hero */}
+              {/* Columna Izquierda: Textos del Flyer Exacto */}
               <div className="lg:col-span-7 space-y-6 pt-2">
-                {/* Subtítulo Turquesa / Teal #06BCA3 */}
-                <p className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#06BCA3]">
-                  CAPACITACIÓN TÉCNICA PRÁCTICA
-                </p>
-
-                {/* Título Principal Exacto */}
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-[1.05] text-white">
-                  OPERACIÓN<br />
-                  DE GRÚAS<br />
-                  <span className="text-[#06BCA3]">
-                    PALFINGER
+                {/* 1. Eyebrow Exacto: CONVOCATORIA ABIERTA */}
+                <div className="inline-flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#06BCA3]">
+                    CONVOCATORIA ABIERTA
                   </span>
-                </h1>
+                </div>
 
-                {/* Descripción Exacta */}
-                <p className="text-sm sm:text-base md:text-lg text-zinc-300 leading-relaxed max-w-xl">
-                  Una experiencia técnica para operadores y riggers que buscan fortalecer sus competencias y ampliar sus oportunidades profesionales.
-                </p>
+                {/* 2. Título Principal Exacto del Flyer */}
+                <div className="space-y-3">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-black uppercase tracking-tight leading-[1.08] text-white">
+                    CAPACITACIÓN<br />
+                    TÉCNICO-PRÁCTICA<br />
+                    EN OPERACIÓN DE GRÚAS
+                  </h1>
 
-                {/* En Alianza con: Ramirez Group × Zapler x PALFINGER */}
-                <div className="pt-1">
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-zinc-400 mb-2">
-                    En alianza con:
+                  {/* Logo / Insignia Oficial PALFINGER */}
+                  <div className="pt-1 flex items-center">
+                    <img
+                      src="/images/logos/palfinger.svg"
+                      alt="PALFINGER"
+                      className="h-10 sm:h-12 md:h-14 w-auto object-contain drop-shadow-md"
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Dirigida a: Operadores y Riggers con experiencia */}
+                <div className="space-y-1">
+                  <p className="text-sm sm:text-base text-zinc-300 font-medium">
+                    Dirigida a:
                   </p>
-                  <div className="inline-flex flex-wrap items-center gap-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-2.5 backdrop-blur-sm">
-                    <span className="text-xs sm:text-sm font-bold text-white">
-                      Ramirez Group
-                    </span>
-                    <span className="text-zinc-600 font-bold">×</span>
-                    <span className="text-xs sm:text-sm font-bold text-[#06BCA3]">
-                      Zapler
-                    </span>
-                    <span className="text-zinc-600 font-bold">×</span>
-                    <div className="bg-[#FFCC00] text-black font-black text-[10px] tracking-wider px-2 py-0.5 rounded-full uppercase">
-                      PALFINGER
+                  <p className="text-base sm:text-lg md:text-xl font-black text-white">
+                    Operadores y Riggers con experiencia
+                  </p>
+                </div>
+
+                {/* 4. ¡NO PIERDAS ESTA OPORTUNIDAD! */}
+                <div className="space-y-1.5 pt-1">
+                  <p className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight uppercase">
+                    ¡NO PIERDAS{" "}
+                    <span className="text-[#06BCA3]">ESTA OPORTUNIDAD!</span>
+                  </p>
+                  <p className="text-sm sm:text-base text-zinc-300 leading-relaxed max-w-xl">
+                    Regístrate y da el siguiente paso para impulsar tu carrera profesional.
+                  </p>
+                  <p className="text-xs text-zinc-400 font-medium">
+                    *Cupos sujetos a evaluación y aforo del local.
+                  </p>
+                </div>
+
+                {/* 5. Co-Branding Bar "Organizan:" (Exacto del Flyer) */}
+                <div className="pt-2">
+                  <p className="text-[11px] font-black uppercase tracking-widest text-zinc-400 mb-2.5">
+                    Organizan:
+                  </p>
+                  <div className="inline-flex flex-wrap items-center gap-4 sm:gap-6 bg-zinc-900/90 border border-zinc-800 rounded-2xl px-5 py-3.5 backdrop-blur-md shadow-lg">
+                    {/* Ramirez Group */}
+                    <div className="flex items-center">
+                      <img
+                        src="/images/logos/ramirez-group.png"
+                        alt="Ramirez Group"
+                        className="h-6 sm:h-7 w-auto object-contain brightness-0 invert"
+                      />
+                    </div>
+
+                    <span className="text-zinc-600 font-bold hidden sm:inline">|</span>
+
+                    {/* Zapler */}
+                    <div className="flex items-center">
+                      <img
+                        src="/images/logos/zapler-white.svg"
+                        alt="Zapler"
+                        className="h-5 sm:h-6 w-auto object-contain"
+                      />
+                    </div>
+
+                    <span className="text-zinc-600 font-bold hidden sm:inline">|</span>
+
+                    {/* Palfinger */}
+                    <div className="flex items-center">
+                      <img
+                        src="/images/logos/palfinger.svg"
+                        alt="PALFINGER"
+                        className="h-6 sm:h-7 w-auto object-contain"
+                      />
                     </div>
                   </div>
                 </div>
 
-                {/* 5 Íconos Inferiores de Beneficios Rápidos (con #06BCA3) */}
-                <div className="pt-6 grid grid-cols-2 sm:grid-cols-5 gap-3 border-t border-zinc-800/80 max-w-2xl">
-                  <div className="text-center p-2 rounded-xl bg-zinc-950/40 border border-zinc-800/60">
-                    <div className="w-8 h-8 rounded-lg text-[#06BCA3] flex items-center justify-center mx-auto mb-1">
-                      <Truck size={18} />
-                    </div>
-                    <p className="text-[10px] font-bold uppercase tracking-tight text-zinc-200">
-                      Capacitación Práctica
+                {/* 6. Beneficios Rápidos con Badge "CUPOS LIMITADOS ↗" */}
+                <div className="pt-6 border-t border-zinc-800/80 max-w-2xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-xs font-black uppercase tracking-widest text-zinc-400">
+                      Beneficios incluidos:
                     </p>
+                    {/* Badge Cupos Limitados del Flyer */}
+                    <div className="inline-flex items-center gap-1.5 bg-[#FED100] text-black font-black text-xs uppercase px-3 py-1 rounded-lg tracking-wider shadow-sm">
+                      <ArrowUpRight size={16} className="stroke-[3]" />
+                      <span>Cupos Limitados</span>
+                    </div>
                   </div>
 
-                  <div className="text-center p-2 rounded-xl bg-zinc-950/40 border border-zinc-800/60">
-                    <div className="w-8 h-8 rounded-lg text-[#06BCA3] flex items-center justify-center mx-auto mb-1">
-                      <Wrench size={18} />
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <div className="text-center p-2.5 rounded-xl bg-zinc-950/50 border border-zinc-800/70">
+                      <div className="w-8 h-8 rounded-lg text-[#06BCA3] flex items-center justify-center mx-auto mb-1">
+                        <HardHat size={18} />
+                      </div>
+                      <p className="text-[10px] font-black uppercase tracking-tight text-zinc-200">
+                        Capacitación Práctica
+                      </p>
                     </div>
-                    <p className="text-[10px] font-bold uppercase tracking-tight text-zinc-200">
-                      Especialistas del Sector
-                    </p>
-                  </div>
 
-                  <div className="text-center p-2 rounded-xl bg-zinc-950/40 border border-zinc-800/60">
-                    <div className="w-8 h-8 rounded-lg text-[#06BCA3] flex items-center justify-center mx-auto mb-1">
-                      <Award size={18} />
+                    <div className="text-center p-2.5 rounded-xl bg-zinc-950/50 border border-zinc-800/70">
+                      <div className="w-8 h-8 rounded-lg text-[#06BCA3] flex items-center justify-center mx-auto mb-1">
+                        <Wrench size={18} />
+                      </div>
+                      <p className="text-[10px] font-black uppercase tracking-tight text-zinc-200">
+                        Especialistas del Sector
+                      </p>
                     </div>
-                    <p className="text-[10px] font-bold uppercase tracking-tight text-zinc-200">
-                      Certificación Asistencia
-                    </p>
-                  </div>
 
-                  <div className="text-center p-2 rounded-xl bg-zinc-950/40 border border-zinc-800/60">
-                    <div className="w-8 h-8 rounded-lg text-[#06BCA3] flex items-center justify-center mx-auto mb-1">
-                      <Coffee size={18} />
+                    <div className="text-center p-2.5 rounded-xl bg-zinc-950/50 border border-zinc-800/70">
+                      <div className="w-8 h-8 rounded-lg text-[#06BCA3] flex items-center justify-center mx-auto mb-1">
+                        <Award size={18} />
+                      </div>
+                      <p className="text-[10px] font-black uppercase tracking-tight text-zinc-200">
+                        Certificación de Asistencia
+                      </p>
                     </div>
-                    <p className="text-[10px] font-bold uppercase tracking-tight text-zinc-200">
-                      Refrigerio
-                    </p>
-                  </div>
 
-                  <div className="text-center p-2 rounded-xl bg-zinc-950/40 border border-zinc-800/60 col-span-2 sm:col-span-1">
-                    <div className="w-8 h-8 rounded-lg text-[#06BCA3] flex items-center justify-center mx-auto mb-1">
-                      <Gift size={18} />
+                    <div className="text-center p-2.5 rounded-xl bg-zinc-950/50 border border-zinc-800/70">
+                      <div className="w-8 h-8 rounded-lg text-[#06BCA3] flex items-center justify-center mx-auto mb-1">
+                        <Coffee size={18} />
+                      </div>
+                      <p className="text-[10px] font-black uppercase tracking-tight text-zinc-200">
+                        Refrigerio
+                      </p>
                     </div>
-                    <p className="text-[10px] font-bold uppercase tracking-tight text-zinc-200">
-                      Premios y Sorpresas
-                    </p>
+
+                    <div className="text-center p-2.5 rounded-xl bg-zinc-950/50 border border-zinc-800/70 col-span-2 sm:col-span-1">
+                      <div className="w-8 h-8 rounded-lg text-[#06BCA3] flex items-center justify-center mx-auto mb-1">
+                        <Gift size={18} />
+                      </div>
+                      <p className="text-[10px] font-black uppercase tracking-tight text-zinc-200">
+                        Premios y Sorpresas
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -209,21 +391,33 @@ export default function PalfingerLandingPage() {
                   Esta capacitación se realiza en alianza con Zapler y PALFINGER, marcas líderes en soluciones de izaje, para compartir conocimientos técnicos, experiencia en campo y las mejores prácticas de operación.
                 </p>
 
-                {/* Logos de Alianza */}
-                <div className="pt-2 flex items-center gap-4">
+                {/* Logos de Alianza con Logos Oficiales */}
+                <div className="pt-2 flex flex-wrap items-center gap-4">
+                  {/* Ramirez Group */}
+                  <div className="flex items-center border border-zinc-200 rounded-xl px-4 py-2 bg-zinc-50 shadow-2xs">
+                    <img
+                      src="/images/logos/ramirez-group-color.png"
+                      alt="Ramirez Group"
+                      className="h-7 w-auto object-contain"
+                    />
+                  </div>
+
                   {/* ZAPLER */}
-                  <div className="flex items-center gap-1.5 border border-zinc-300 rounded-xl px-4 py-2 bg-zinc-50">
-                    <span className="flex h-5 w-5 items-center justify-center rounded bg-red-600 text-white font-black text-xs">
-                      Z
-                    </span>
-                    <span className="text-sm font-black tracking-wider text-zinc-900 uppercase">
-                      ZAPLER
-                    </span>
+                  <div className="flex items-center border border-zinc-200 rounded-xl px-4 py-2 bg-zinc-50 shadow-2xs">
+                    <img
+                      src="/images/logos/zapler-dark.svg"
+                      alt="Zapler"
+                      className="h-6 w-auto object-contain"
+                    />
                   </div>
 
                   {/* PALFINGER */}
-                  <div className="bg-[#FFCC00] text-black border-2 border-black font-black text-xs tracking-wider px-4 py-2 rounded-full uppercase shadow-xs">
-                    PALFINGER
+                  <div className="flex items-center">
+                    <img
+                      src="/images/logos/palfinger.svg"
+                      alt="PALFINGER"
+                      className="h-8 w-auto object-contain shadow-2xs"
+                    />
                   </div>
                 </div>
               </div>
@@ -279,12 +473,12 @@ export default function PalfingerLandingPage() {
                 },
                 {
                   title: "REFRIGERIO",
-                  desc: "Durante la jornada.",
+                  desc: "Durante la jornada del evento.",
                   icon: Coffee,
                 },
                 {
                   title: "PREMIOS",
-                  desc: "Sorpresas y premios para los participantes.",
+                  desc: "Sorpresas y premios para los participantes destacados.",
                   icon: Gift,
                 },
               ].map((item, idx) => {
@@ -331,9 +525,9 @@ export default function PalfingerLandingPage() {
                 {/* Bullets con Checkmarks #06BCA3 */}
                 <ul className="space-y-3">
                   {[
-                    "Operadores de grúa",
-                    "Riggers",
-                    "Profesionales con experiencia en izaje",
+                    "Operadores de grúa articulada y telescópica",
+                    "Riggers certificados",
+                    "Profesionales con experiencia comprobada en izaje",
                     "Experiencia en minería, construcción, industria, puertos u otros sectores",
                   ].map((bullet, idx) => (
                     <li key={idx} className="flex items-start gap-3">
@@ -347,7 +541,7 @@ export default function PalfingerLandingPage() {
                   ))}
                 </ul>
 
-                {/* Caja Destacada (Frase Exacta del Mockup con #06BCA3) */}
+                {/* Caja Destacada */}
                 <div className="rounded-2xl border border-teal-200 bg-teal-50/80 p-4 sm:p-5 flex items-start gap-4 shadow-xs">
                   <div className="w-12 h-12 rounded-xl bg-[#06BCA3]/15 text-[#048674] flex items-center justify-center flex-shrink-0 mt-0.5">
                     <HardHat size={26} />
@@ -363,7 +557,7 @@ export default function PalfingerLandingPage() {
                   href="#formulario"
                   className="inline-flex items-center gap-2 text-sm font-bold text-zinc-900 hover:text-[#06BCA3] transition-colors"
                 >
-                  <span>Inscríbete a la capacitación</span>
+                  <span>Inscríbete para la evaluación técnica</span>
                   <ArrowRight size={16} />
                 </a>
               </div>
@@ -382,56 +576,32 @@ export default function PalfingerLandingPage() {
           </div>
         </section>
 
-        {/* ── 5. PROCESO DE PARTICIPACIÓN ───────────────────────────── */}
-        <section className="bg-[#121418] text-white py-16 sm:py-20 border-b border-zinc-800">
+        {/* ── 5. LLAMADO A LA ACCIÓN (CUPOS LIMITADOS) ──────────────── */}
+        <section className="bg-[#121418] text-white py-14 sm:py-16 border-b border-zinc-800">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-white mb-12 text-center md:text-left">
-              PROCESO DE PARTICIPACIÓN
-            </h2>
+            <div className="rounded-3xl border border-zinc-800 bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+              <div className="space-y-2 text-center md:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#06BCA3]/15 text-[#06BCA3] text-xs font-extrabold uppercase tracking-wider">
+                  <ShieldCheck size={14} />
+                  <span>Proceso de Selección Activo</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-black uppercase tracking-tight text-white">
+                  ¿Listo para potenciar tu carrera profesional?
+                </h3>
+                <p className="text-sm text-zinc-400 max-w-xl">
+                  Registra tus datos y experiencia. Recuerda que los cupos son limitados y se asignan mediante evaluación técnica.
+                </p>
+              </div>
 
-            <div className="grid md:grid-cols-3 gap-8 relative">
-              {[
-                {
-                  step: "1",
-                  title: "REGÍSTRATE",
-                  desc: "Completa el formulario en esta página.",
-                  icon: ClipboardList,
-                },
-                {
-                  step: "2",
-                  title: "EVALUACIÓN DE PERFILES",
-                  desc: "Revisaremos la información para seleccionar a los participantes.",
-                  icon: Users2,
-                },
-                {
-                  step: "3",
-                  title: "RECIBE TU INVITACIÓN",
-                  desc: "Si tu perfil cumple con los criterios, te enviaremos la invitación con los detalles del evento.",
-                  icon: Mail,
-                },
-              ].map((s, idx) => {
-                const IconComp = s.icon;
-                return (
-                  <div key={idx} className="flex items-start gap-4">
-                    {/* Número Circular #06BCA3 */}
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#06BCA3] text-zinc-950 font-black text-sm flex-shrink-0 shadow-sm">
-                      {s.step}
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <IconComp size={16} className="text-[#06BCA3]" />
-                        <h3 className="text-sm font-black uppercase tracking-wide text-white">
-                          {s.title}
-                        </h3>
-                      </div>
-                      <p className="text-xs text-zinc-400 leading-relaxed">
-                        {s.desc}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+              <div className="flex-shrink-0">
+                <a
+                  href="#formulario"
+                  className="inline-flex items-center gap-2.5 rounded-xl bg-[#06BCA3] px-6 py-3.5 text-sm font-black uppercase tracking-wide text-zinc-950 hover:bg-[#05a791] transition-colors shadow-lg"
+                >
+                  <span>Ir al Formulario</span>
+                  <ArrowRight size={18} />
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -498,14 +668,14 @@ export default function PalfingerLandingPage() {
         </section>
       </main>
 
-      {/* ── FOOTER INSTITUCIONAL (EXACTO DEL MOCKUP) ───────────────── */}
+      {/* ── FOOTER INSTITUCIONAL (CON LOGOS OFICIALES) ───────────────── */}
       <footer className="bg-[#0c0d0f] text-white py-12 border-t border-zinc-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-zinc-800/80">
             {/* Logo Ramirez con su lema */}
             <div className="flex items-center gap-4">
               <img
-                src="https://ramirezgroup.com.pe/wp-content/uploads/2023/06/logo-RAMIREZ-GROUP.png"
+                src="/images/logos/ramirez-group.png"
                 alt="Ramirez Group"
                 className="h-8 w-auto object-contain brightness-0 invert"
               />
@@ -520,21 +690,23 @@ export default function PalfingerLandingPage() {
             </div>
 
             {/* Logos de Alianza Footer */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1 bg-[#073628] border border-[#0d5943] text-white px-2 py-0.5 rounded text-[11px] font-black">
-                <span>TBM</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="flex h-4 w-4 items-center justify-center rounded bg-white text-zinc-950 font-black text-[10px]">
-                  Z
-                </span>
-                <span className="text-xs font-black tracking-wider text-white uppercase">
-                  ZAPLER
-                </span>
-              </div>
-              <div className="bg-[#FFCC00] text-black font-black text-[10px] tracking-wider px-2 py-0.5 rounded-full uppercase">
-                PALFINGER
-              </div>
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+              <span className="text-xs font-semibold text-zinc-400">Organizan:</span>
+              <img
+                src="/images/logos/ramirez-group.png"
+                alt="Ramirez Group"
+                className="h-6 w-auto object-contain brightness-0 invert"
+              />
+              <img
+                src="/images/logos/zapler-white.svg"
+                alt="ZAPLER"
+                className="h-5 w-auto object-contain"
+              />
+              <img
+                src="/images/logos/palfinger.svg"
+                alt="PALFINGER"
+                className="h-6 w-auto object-contain"
+              />
             </div>
           </div>
 
