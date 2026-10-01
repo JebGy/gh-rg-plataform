@@ -123,29 +123,70 @@ export async function registerPalfingerTraining(
         };
       }
 
-      if (cvFile.size > 15 * 1024 * 1024) {
+      if (cvFile.size > 20 * 1024 * 1024) {
         return {
           success: false,
           errors: {
-            cvFile: ["El archivo excede el tamaño máximo permitido de 15MB."],
+            cvFile: ["El archivo excede el tamaño máximo permitido de 20MB."],
           },
+          message: "El archivo es demasiado pesado (máximo 20MB).",
         };
       }
 
+      cvFileName = cvFile.name;
+
+      // 1. Sincronizar archivo con RG-Hub (MinIO S3 + Compresión nativa PDF)
+      const rghubUrl =
+        process.env.RGHUB_API_URL ||
+        process.env.RGHUB_URL ||
+        "https://hub.ramirezgroup.com.pe";
+      const rghubApiKey = process.env.GHAPP_INTEGRATION_KEY || "rg_arca_ghapp_sync_2026";
+
       try {
-        const uploadDir = path.join(process.cwd(), "public", "uploads", "cv");
-        await fs.mkdir(uploadDir, { recursive: true });
-        const sanitizedDni = rawDni.replace(/[^0-9]/g, "");
-        const uniqueFileName = `cv_${sanitizedDni}_${Date.now()}${ext}`;
-        const targetPath = path.join(uploadDir, uniqueFileName);
-        const arrayBuffer = await cvFile.arrayBuffer();
-        await fs.writeFile(targetPath, Buffer.from(arrayBuffer));
-        cvFileName = cvFile.name;
-        cvFilePath = `/uploads/cv/${uniqueFileName}`;
-      } catch (fileErr) {
-        console.error("Error saving CV file:", fileErr);
-        // Do not block registration if file write fails, save original file name
-        cvFileName = cvFile.name;
+        const hubFormData = new FormData();
+        hubFormData.append("file", cvFile);
+        hubFormData.append("folderName", "Capacitaciones PALFINGER 2026");
+        hubFormData.append("candidateName", rawFullName);
+        hubFormData.append("candidateDni", rawDni);
+        hubFormData.append("candidatePhone", rawPhone);
+        hubFormData.append("source", "palfinger");
+
+        const hubRes = await fetch(`${rghubUrl}/api/integrations/ghapp/upload`, {
+          method: "POST",
+          headers: {
+            "x-api-key": rghubApiKey,
+          },
+          body: hubFormData,
+          signal: AbortSignal.timeout(12000),
+        });
+
+        if (hubRes.ok) {
+          const hubData = await hubRes.json();
+          if (hubData.success && hubData.document) {
+            cvFilePath = hubData.document.downloadUrl || hubData.document.directUrl;
+            cvFileName = hubData.document.name || cvFile.name;
+          }
+        } else {
+          console.warn("RG-Hub sync returned HTTP status:", hubRes.status);
+        }
+      } catch (hubErr: any) {
+        console.warn("Notice: RG-Hub sync attempt bypassed or unavailable:", hubErr?.message || hubErr);
+      }
+
+      // 2. Si no se obtuvo URL de RG-Hub (ej. offline o entorno local), intentar guardar en disco local si es escribible
+      if (!cvFilePath) {
+        try {
+          const uploadDir = path.join(process.cwd(), "public", "uploads", "cv");
+          await fs.mkdir(uploadDir, { recursive: true });
+          const sanitizedDni = rawDni.replace(/[^0-9]/g, "");
+          const uniqueFileName = `cv_${sanitizedDni}_${Date.now()}${ext}`;
+          const targetPath = path.join(uploadDir, uniqueFileName);
+          const arrayBuffer = await cvFile.arrayBuffer();
+          await fs.writeFile(targetPath, Buffer.from(arrayBuffer));
+          cvFilePath = `/uploads/cv/${uniqueFileName}`;
+        } catch {
+          // En serverless de solo lectura (como Vercel) no bloqueamos la inscripción del postulante
+        }
       }
     }
 
@@ -176,52 +217,8 @@ export async function registerPalfingerTraining(
       updatedAt: nowIso,
     };
 
-    // Guardar en el almacenamiento local robusto
+    // Guardar en almacenamiento seguro con persistencia en PostgreSQL
     await savePalfingerRegistration(record);
-
-    // Intentar sincronizar también en la tabla Candidate si está disponible
-    try {
-      const db = await getDb();
-      // Encontrar posición relacionada a Camión Grúa o Rigger
-      const allPositions = await db.orm.public.Position.all();
-      let posId = allPositions[0]?.id || 1;
-      const lowerProfile = validated.data.profile.toLowerCase();
-      if (lowerProfile.includes("rigger")) {
-        const riggerPos = allPositions.find((p) => p.title.toLowerCase().includes("rigger"));
-        if (riggerPos) posId = riggerPos.id;
-      } else if (lowerProfile.includes("grúa") || lowerProfile.includes("operador")) {
-        const cranePos = allPositions.find((p) => p.title.toLowerCase().includes("grúa") || p.title.toLowerCase().includes("operador"));
-        if (cranePos) posId = cranePos.id;
-      }
-
-      await db.orm.public.Candidate.create({
-        id: registrationId,
-        positionId: posId,
-        fullName: validated.data.fullName,
-        dni: validated.data.dni,
-        phone: validated.data.phone,
-        email: validated.data.email || null,
-        licenseNumber: `[PALFINGER] ${validated.data.categoryBadge} | ${validated.data.profile}`,
-        residenceCity: validated.data.residenceCity,
-        availability: `Capacitación PALFINGER (Futuras Oportunidades: ${validated.data.futureOpportunities})`,
-        status: "nuevo",
-        recruiterNotes: JSON.stringify({
-          source: "capacitacion_palfinger",
-          profile: validated.data.profile,
-          experienceYears: validated.data.experienceYears,
-          equipmentExperience: validated.data.equipmentExperience,
-          sectors: validated.data.sectors,
-          miningExperience: validated.data.miningExperience,
-          palfingerExperience: validated.data.palfingerExperience,
-          categoryBadge: validated.data.categoryBadge,
-          cvFileName,
-          cvFilePath,
-          futureOpportunities: validated.data.futureOpportunities,
-        }),
-      });
-    } catch (dbErr) {
-      console.warn("Could not sync to DB candidates table (fallback to local store active):", dbErr);
-    }
 
     revalidatePath("/");
     revalidatePath("/admin");

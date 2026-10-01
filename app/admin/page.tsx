@@ -22,9 +22,19 @@ export default async function AdminPage({
 
   const positionsMap = new Map(rawPositions.map((p) => [p.id, p.title]));
 
-  // Build candidate list with positionTitle
+  // Build candidate list with positionTitle for Antamina recruitment
+  const recruitmentCandidatesRaw = rawCandidates.filter((c) => {
+    const notes = c.recruiterNotes || "";
+    const license = c.licenseNumber || "";
+    const avail = c.availability || "";
+    return !(
+      notes.includes('"source":"capacitacion_palfinger"') ||
+      license.includes("[PALFINGER]") ||
+      avail.includes("PALFINGER")
+    );
+  });
 
-  let candidates = rawCandidates.map((c) => ({
+  let candidates = recruitmentCandidatesRaw.map((c) => ({
     id: c.id,
     fullName: c.fullName,
     dni: c.dni,
