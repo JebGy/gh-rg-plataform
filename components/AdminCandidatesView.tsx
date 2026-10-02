@@ -127,6 +127,7 @@ export default function AdminCandidatesView({
       "Exp. PALFINGER": r.palfingerExperience,
       "Franja / Categoría": r.categoryBadge,
       "Tiene CV": r.cvFileName ? `Sí (${r.cvFileName})` : "No",
+      "Enlace CV": r.cvFilePath || (r.cvFileName ? "Pendiente de sincronización" : "No adjuntó"),
       "Interés Oportunidades": r.futureOpportunities,
       Estado: STATUS_CONFIG[r.status]?.label || r.status,
       "Notas Coordinador": r.recruiterNotes || "",
@@ -466,17 +467,25 @@ export default function AdminCandidatesView({
                             Exp. PALFINGER: {reg.palfingerExperience}
                           </span>
                         </div>
-                        {reg.cvFilePath && (
+                        {reg.cvFilePath ? (
                           <a
                             href={reg.cvFilePath}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800 underline"
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2.5 py-1 rounded-md transition-colors"
                           >
-                            <FileText size={13} />
+                            <FileText size={14} />
                             <span>Descargar CV ({reg.cvFileName})</span>
                           </a>
-                        )}
+                        ) : reg.cvFileName ? (
+                          <span
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-md"
+                            title="El postulante adjuntó este archivo pero el servidor RG-Hub no estuvo accesible al momento del registro."
+                          >
+                            <FileText size={14} />
+                            <span>CV: {reg.cvFileName} (Pendiente de sinc)</span>
+                          </span>
+                        ) : null}
                       </div>
 
                       {reg.recruiterNotes && openNotes !== reg.id && (
