@@ -66,15 +66,8 @@ export default function PalfingerLandingPage() {
               />
             </div>
 
-            {/* Acceso Bolsa Antamina & Admin */}
+            {/* Acceso Admin */}
             <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-zinc-800 text-xs font-semibold text-zinc-400">
-              <Link
-                href="/recruitment"
-                className="hover:text-[#06BCA3] transition-colors flex items-center gap-1"
-                title="Convocatoria Operativa Antamina"
-              >
-                <span>Bolsa Antamina</span>
-              </Link>
               <Link
                 href="/admin"
                 className="hover:text-white transition-colors"
