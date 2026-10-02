@@ -139,7 +139,7 @@ export async function registerPalfingerTraining(
       const rghubUrl =
         process.env.RGHUB_API_URL ||
         process.env.RGHUB_URL ||
-        "https://hub.ramirezgroup.com.pe";
+        "https://proyectoarca.ramirezgroup.com.pe";
       const rghubApiKey = process.env.GHAPP_INTEGRATION_KEY || "rg_arca_ghapp_sync_2026";
 
       try {
