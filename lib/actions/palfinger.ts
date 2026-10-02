@@ -136,15 +136,23 @@ export async function registerPalfingerTraining(
       cvFileName = cvFile.name;
 
       // 1. Sincronizar archivo con RG-Hub (MinIO S3 + Compresión nativa PDF)
-      const rghubUrl =
+      let rghubUrl =
         process.env.RGHUB_API_URL ||
         process.env.RGHUB_URL ||
         "https://proyectoarca.ramirezgroup.com.pe";
+
+      if (rghubUrl.includes("hub.ramirezgroup.com.pe")) {
+        rghubUrl = "https://proyectoarca.ramirezgroup.com.pe";
+      }
+
       const rghubApiKey = process.env.GHAPP_INTEGRATION_KEY || "rg_arca_ghapp_sync_2026";
 
       try {
+        const fileBuffer = Buffer.from(await cvFile.arrayBuffer());
+        const fileBlob = new Blob([fileBuffer], { type: cvFile.type || "application/pdf" });
+
         const hubFormData = new FormData();
-        hubFormData.append("file", cvFile);
+        hubFormData.append("file", fileBlob, cvFile.name);
         hubFormData.append("folderName", "Capacitaciones PALFINGER 2026");
         hubFormData.append("candidateName", rawFullName);
         hubFormData.append("candidateDni", rawDni);
@@ -157,17 +165,18 @@ export async function registerPalfingerTraining(
             "x-api-key": rghubApiKey,
           },
           body: hubFormData,
-          signal: AbortSignal.timeout(12000),
+          signal: AbortSignal.timeout(30000),
         });
 
         if (hubRes.ok) {
           const hubData = await hubRes.json();
           if (hubData.success && hubData.document) {
             cvFilePath = hubData.document.downloadUrl || hubData.document.directUrl;
-            cvFileName = hubData.document.name || cvFile.name;
+            cvFileName = hubData.document.originalName || hubData.document.name || cvFile.name;
           }
         } else {
-          console.warn("RG-Hub sync returned HTTP status:", hubRes.status);
+          const errText = await hubRes.text().catch(() => "");
+          console.warn("RG-Hub sync returned HTTP status:", hubRes.status, errText);
         }
       } catch (hubErr: any) {
         console.warn("Notice: RG-Hub sync attempt bypassed or unavailable:", hubErr?.message || hubErr);
@@ -264,14 +273,22 @@ export async function syncPalfingerCvAction(candidateId: string, formData: FormD
       return { success: false, message: "No se encontró el registro del participante." };
     }
 
-    const rghubUrl =
+    let rghubUrl =
       process.env.RGHUB_API_URL ||
       process.env.RGHUB_URL ||
       "https://proyectoarca.ramirezgroup.com.pe";
+
+    if (rghubUrl.includes("hub.ramirezgroup.com.pe")) {
+      rghubUrl = "https://proyectoarca.ramirezgroup.com.pe";
+    }
+
     const rghubApiKey = process.env.GHAPP_INTEGRATION_KEY || "rg_arca_ghapp_sync_2026";
 
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    const fileBlob = new Blob([fileBuffer], { type: file.type || "application/pdf" });
+
     const hubFormData = new FormData();
-    hubFormData.append("file", file);
+    hubFormData.append("file", fileBlob, file.name);
     hubFormData.append("folderName", "Capacitaciones PALFINGER 2026");
     hubFormData.append("candidateName", reg.fullName);
     hubFormData.append("candidateDni", reg.dni);
@@ -284,6 +301,7 @@ export async function syncPalfingerCvAction(candidateId: string, formData: FormD
         "x-api-key": rghubApiKey,
       },
       body: hubFormData,
+      signal: AbortSignal.timeout(30000),
     });
 
     if (!hubRes.ok) {
