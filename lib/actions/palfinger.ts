@@ -109,6 +109,7 @@ export async function registerPalfingerTraining(
     let cvFileName: string | null = null;
     let cvFilePath: string | null = null;
     const cvFile = formData.get("cvFile") as File | null;
+    console.log("[palfinger] cvFile check:", cvFile ? { name: cvFile.name, size: cvFile.size, type: cvFile.type } : "NO_FILE");
 
     if (cvFile && cvFile.size > 0 && cvFile.name) {
       const allowedExts = [".pdf", ".doc", ".docx"];
@@ -149,8 +150,9 @@ export async function registerPalfingerTraining(
 
         // Enlace de descarga dinámico permanente (nunca expira)
         cvFilePath = `/api/palfinger/cv?key=${encodeURIComponent(uploadRes.fileKey)}&filename=${encodeURIComponent(cvFile.name)}`;
+        console.log("[palfinger] S3 Upload OK, cvFilePath:", cvFilePath);
       } catch (s3Err: any) {
-        console.warn("Direct MinIO upload attempt warning:", s3Err?.message || s3Err);
+        console.error("[palfinger] Direct MinIO upload ERROR:", s3Err?.message || s3Err);
       }
 
       // 2. Notificación en segundo plano a RG-Hub vía JSON (sin bloquear)

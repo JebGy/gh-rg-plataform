@@ -235,8 +235,15 @@ export default function PalfingerForm() {
   }
 
   // ── FORMULARIO STEPPED ─────────────────────────────────────────────
+  async function handleSubmit(formData: FormData) {
+    if (cvFile) {
+      formData.set("cvFile", cvFile);
+    }
+    formAction(formData);
+  }
+
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={handleSubmit} encType="multipart/form-data" className="space-y-4">
       {/* Encabezado del Formulario (según diseño) */}
       <div className="border-b border-zinc-100 pb-3">
         <div className="flex items-center justify-between mb-1">
@@ -644,7 +651,17 @@ export default function PalfingerForm() {
             </div>
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border border-dashed border-zinc-300 hover:border-[#06BCA3] bg-zinc-50/70 rounded-xl p-2.5 text-center cursor-pointer transition-colors"
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={handleDrop}
+              className={`border border-dashed rounded-xl p-2.5 text-center cursor-pointer transition-colors ${
+                isDragging
+                  ? "border-[#06BCA3] bg-teal-50"
+                  : "border-zinc-300 hover:border-[#06BCA3] bg-zinc-50/70"
+              }`}
             >
               <input
                 ref={fileInputRef}
