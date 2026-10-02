@@ -6,6 +6,10 @@ import * as XLSX from "xlsx";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  if (process.env.NODE_ENV !== "development") {
+    return new NextResponse(null, { status: 404 });
+  }
+
   const isAuth = await isAuthenticated();
   if (!isAuth) {
     return new NextResponse(JSON.stringify({ error: "Acceso no autorizado. Debe autenticarse como root." }), {

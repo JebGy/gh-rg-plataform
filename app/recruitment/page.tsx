@@ -61,12 +61,14 @@ export default async function RecruitmentPage() {
               <Award size={15} />
               <span>Capacitación PALFINGER</span>
             </Link>
-            <Link
-              href="/admin"
-              className="text-xs sm:text-sm font-medium text-zinc-600 hover:text-zinc-900 px-3 py-2 rounded-md hover:bg-zinc-100 transition-colors"
-            >
-              Acceso Admin
-            </Link>
+            {process.env.NODE_ENV === "development" && (
+              <Link
+                href="/admin"
+                className="text-xs sm:text-sm font-medium text-zinc-600 hover:text-zinc-900 px-3 py-2 rounded-md hover:bg-zinc-100 transition-colors"
+              >
+                Acceso Admin
+              </Link>
+            )}
             <a
               href="#registro"
               className="btn-primary text-xs sm:text-sm py-2 px-4"
@@ -302,9 +304,11 @@ export default async function RecruitmentPage() {
               <Link href="/" className="hover:text-zinc-900 transition-colors">
                 Capacitación PALFINGER
               </Link>
-              <Link href="/admin" className="hover:text-zinc-900 transition-colors">
-                Acceso Administrativo
-              </Link>
+              {process.env.NODE_ENV === "development" && (
+                <Link href="/admin" className="hover:text-zinc-900 transition-colors">
+                  Acceso Administrativo
+                </Link>
+              )}
             </div>
             <p className="text-xs text-zinc-500 text-center md:text-right">
               © {new Date().getFullYear()} Ramirez Group. Todos los derechos reservados.

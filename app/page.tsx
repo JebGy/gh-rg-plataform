@@ -66,16 +66,18 @@ export default function PalfingerLandingPage() {
               />
             </div>
 
-            {/* Acceso Admin */}
-            <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-zinc-800 text-xs font-semibold text-zinc-400">
-              <Link
-                href="/admin"
-                className="hover:text-white transition-colors"
-                title="Acceso administrativo"
-              >
-                Admin
-              </Link>
-            </div>
+            {/* Acceso Admin (solo en dev) */}
+            {process.env.NODE_ENV === "development" && (
+              <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-zinc-800 text-xs font-semibold text-zinc-400">
+                <Link
+                  href="/admin"
+                  className="hover:text-white transition-colors"
+                  title="Acceso administrativo"
+                >
+                  Admin
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -712,10 +714,14 @@ export default function PalfingerLandingPage() {
               <Link href="/recruitment" className="hover:text-zinc-300 transition-colors">
                 Convocatoria Antamina
               </Link>
-              <span>·</span>
-              <Link href="/admin" className="hover:text-zinc-300 transition-colors">
-                Panel Admin
-              </Link>
+              {process.env.NODE_ENV === "development" && (
+                <>
+                  <span>·</span>
+                  <Link href="/admin" className="hover:text-zinc-300 transition-colors">
+                    Panel Admin
+                  </Link>
+                </>
+              )}
               <span>·</span>
               <a href="#" className="hover:text-zinc-300 transition-colors">
                 Política de privacidad

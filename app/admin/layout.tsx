@@ -1,10 +1,16 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Users, Briefcase, ExternalLink, LogOut, ShieldCheck } from "lucide-react";
 import { isAuthenticated } from "@/lib/auth";
 import AdminLoginForm from "@/components/AdminLoginForm";
 import { logoutAdmin } from "@/lib/actions/auth";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  // Solo accesible en entorno de desarrollo (dev)
+  if (process.env.NODE_ENV !== "development") {
+    notFound();
+  }
+
   const isAuth = await isAuthenticated();
 
   // Si no está autenticado como root, muestra ÚNICAMENTE el login
