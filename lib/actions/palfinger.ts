@@ -134,55 +134,59 @@ export async function registerPalfingerTraining(
       }
 
       cvFileName = cvFile.name;
+      const fileBuffer = Buffer.from(await cvFile.arrayBuffer());
 
-      // 1. Sincronizar archivo con RG-Hub (MinIO S3 + Compresión nativa PDF)
-      let rghubUrl =
-        process.env.RGHUB_API_URL ||
-        process.env.RGHUB_URL ||
-        "https://proyectoarca.ramirezgroup.com.pe";
-
-      if (rghubUrl.includes("hub.ramirezgroup.com.pe")) {
-        rghubUrl = "https://proyectoarca.ramirezgroup.com.pe";
-      }
-
-      const rghubApiKey = process.env.GHAPP_INTEGRATION_KEY || "rg_arca_ghapp_sync_2026";
-
+      // 1. Cargar directamente a MinIO S3 (bucket ssma-2026 con compresión nativa PDF)
       try {
-        const fileBuffer = Buffer.from(await cvFile.arrayBuffer());
-        const fileBlob = new Blob([fileBuffer], { type: cvFile.type || "application/pdf" });
-
-        const hubFormData = new FormData();
-        hubFormData.append("file", fileBlob, cvFile.name);
-        hubFormData.append("folderName", "Capacitaciones PALFINGER 2026");
-        hubFormData.append("candidateName", rawFullName);
-        hubFormData.append("candidateDni", rawDni);
-        hubFormData.append("candidatePhone", rawPhone);
-        hubFormData.append("source", "palfinger");
-
-        const hubRes = await fetch(`${rghubUrl}/api/integrations/ghapp/upload`, {
-          method: "POST",
-          headers: {
-            "x-api-key": rghubApiKey,
-          },
-          body: hubFormData,
-          signal: AbortSignal.timeout(30000),
+        const { uploadPalfingerCv } = await import("@/lib/s3");
+        const uploadRes = await uploadPalfingerCv({
+          fileBuffer,
+          fileName: cvFile.name,
+          mimeType: cvFile.type || "application/pdf",
+          candidateDni: rawDni,
+          candidateName: rawFullName,
         });
 
-        if (hubRes.ok) {
-          const hubData = await hubRes.json();
-          if (hubData.success && hubData.document) {
-            cvFilePath = hubData.document.downloadUrl || hubData.document.directUrl;
-            cvFileName = hubData.document.originalName || hubData.document.name || cvFile.name;
-          }
-        } else {
-          const errText = await hubRes.text().catch(() => "");
-          console.warn("RG-Hub sync returned HTTP status:", hubRes.status, errText);
-        }
-      } catch (hubErr: any) {
-        console.warn("Notice: RG-Hub sync attempt bypassed or unavailable:", hubErr?.message || hubErr);
+        // Enlace de descarga dinámico permanente (nunca expira)
+        cvFilePath = `/api/palfinger/cv?key=${encodeURIComponent(uploadRes.fileKey)}&filename=${encodeURIComponent(cvFile.name)}`;
+      } catch (s3Err: any) {
+        console.warn("Direct MinIO upload attempt warning:", s3Err?.message || s3Err);
       }
 
-      // 2. Si no se obtuvo URL de RG-Hub (ej. offline o entorno local), intentar guardar en disco local si es escribible
+      // 2. Notificación en segundo plano a RG-Hub vía JSON (sin bloquear)
+      try {
+        let rghubUrl =
+          process.env.RGHUB_API_URL ||
+          process.env.RGHUB_URL ||
+          "https://proyectoarca.ramirezgroup.com.pe";
+        if (rghubUrl.includes("hub.ramirezgroup.com.pe")) {
+          rghubUrl = "https://proyectoarca.ramirezgroup.com.pe";
+        }
+        const rghubApiKey = process.env.GHAPP_INTEGRATION_KEY || "rg_arca_ghapp_sync_2026";
+
+        fetch(`${rghubUrl}/api/integrations/ghapp/upload`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": rghubApiKey,
+          },
+          body: JSON.stringify({
+            fileName: cvFile.name,
+            mimeType: cvFile.type || "application/pdf",
+            fileBase64: fileBuffer.toString("base64"),
+            folderName: "Capacitaciones PALFINGER 2026",
+            candidateName: rawFullName,
+            candidateDni: rawDni,
+            candidatePhone: rawPhone,
+            source: "palfinger",
+          }),
+          signal: AbortSignal.timeout(10000),
+        }).catch(() => {});
+      } catch {
+        // Silencioso
+      }
+
+      // 3. Respaldo local si no se obtuvo URL y el entorno lo permite
       if (!cvFilePath) {
         try {
           const uploadDir = path.join(process.cwd(), "public", "uploads", "cv");
@@ -190,11 +194,10 @@ export async function registerPalfingerTraining(
           const sanitizedDni = rawDni.replace(/[^0-9]/g, "");
           const uniqueFileName = `cv_${sanitizedDni}_${Date.now()}${ext}`;
           const targetPath = path.join(uploadDir, uniqueFileName);
-          const arrayBuffer = await cvFile.arrayBuffer();
-          await fs.writeFile(targetPath, Buffer.from(arrayBuffer));
+          await fs.writeFile(targetPath, fileBuffer);
           cvFilePath = `/uploads/cv/${uniqueFileName}`;
         } catch {
-          // En serverless de solo lectura (como Vercel) no bloqueamos la inscripción del postulante
+          // Serveless de solo lectura
         }
       }
     }
@@ -273,59 +276,58 @@ export async function syncPalfingerCvAction(candidateId: string, formData: FormD
       return { success: false, message: "No se encontró el registro del participante." };
     }
 
-    let rghubUrl =
-      process.env.RGHUB_API_URL ||
-      process.env.RGHUB_URL ||
-      "https://proyectoarca.ramirezgroup.com.pe";
-
-    if (rghubUrl.includes("hub.ramirezgroup.com.pe")) {
-      rghubUrl = "https://proyectoarca.ramirezgroup.com.pe";
-    }
-
-    const rghubApiKey = process.env.GHAPP_INTEGRATION_KEY || "rg_arca_ghapp_sync_2026";
-
     const fileBuffer = Buffer.from(await file.arrayBuffer());
-    const fileBlob = new Blob([fileBuffer], { type: file.type || "application/pdf" });
 
-    const hubFormData = new FormData();
-    hubFormData.append("file", fileBlob, file.name);
-    hubFormData.append("folderName", "Capacitaciones PALFINGER 2026");
-    hubFormData.append("candidateName", reg.fullName);
-    hubFormData.append("candidateDni", reg.dni);
-    hubFormData.append("candidatePhone", reg.phone);
-    hubFormData.append("source", "palfinger_admin_sync");
-
-    const hubRes = await fetch(`${rghubUrl}/api/integrations/ghapp/upload`, {
-      method: "POST",
-      headers: {
-        "x-api-key": rghubApiKey,
-      },
-      body: hubFormData,
-      signal: AbortSignal.timeout(30000),
+    // 1. Cargar directamente a MinIO S3 (bucket ssma-2026 con compresión nativa PDF)
+    const { uploadPalfingerCv } = await import("@/lib/s3");
+    const uploadRes = await uploadPalfingerCv({
+      fileBuffer,
+      fileName: file.name,
+      mimeType: file.type || "application/pdf",
+      candidateDni: reg.dni,
+      candidateName: reg.fullName,
     });
 
-    if (!hubRes.ok) {
-      const errJson = await hubRes.json().catch(() => ({}));
-      return {
-        success: false,
-        message: errJson.error || `Error al sincronizar con RG-Hub (HTTP ${hubRes.status})`,
-      };
-    }
-
-    const hubData = await hubRes.json();
-    const cvFilePath = hubData.document?.downloadUrl || hubData.document?.directUrl;
-    const cvFileName = hubData.document?.originalName || file.name;
-
-    if (!cvFilePath) {
-      return { success: false, message: "RG-Hub no devolvió la URL del archivo." };
-    }
+    const cvFilePath = `/api/palfinger/cv?key=${encodeURIComponent(uploadRes.fileKey)}&filename=${encodeURIComponent(file.name)}`;
+    const cvFileName = file.name;
 
     await updatePalfingerCv(candidateId, cvFileName, cvFilePath);
     revalidatePath("/admin");
 
+    // 2. Notificación opcional a RG-Hub en segundo plano vía JSON (sin bloquear)
+    try {
+      let rghubUrl =
+        process.env.RGHUB_API_URL ||
+        process.env.RGHUB_URL ||
+        "https://proyectoarca.ramirezgroup.com.pe";
+      if (rghubUrl.includes("hub.ramirezgroup.com.pe")) {
+        rghubUrl = "https://proyectoarca.ramirezgroup.com.pe";
+      }
+      const rghubApiKey = process.env.GHAPP_INTEGRATION_KEY || "rg_arca_ghapp_sync_2026";
+
+      fetch(`${rghubUrl}/api/integrations/ghapp/upload`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": rghubApiKey,
+        },
+        body: JSON.stringify({
+          fileName: file.name,
+          mimeType: file.type || "application/pdf",
+          fileBase64: fileBuffer.toString("base64"),
+          folderName: "Capacitaciones PALFINGER 2026",
+          candidateName: reg.fullName,
+          candidateDni: reg.dni,
+          candidatePhone: reg.phone,
+          source: "palfinger_admin_sync",
+        }),
+        signal: AbortSignal.timeout(10000),
+      }).catch(() => {});
+    } catch {}
+
     return {
       success: true,
-      message: "¡Documento sincronizado exitosamente con RG-Hub y MinIO!",
+      message: "¡Documento subido y sincronizado exitosamente con MinIO S3!",
       cvFilePath,
       cvFileName,
     };
