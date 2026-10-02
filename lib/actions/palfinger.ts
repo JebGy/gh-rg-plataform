@@ -149,22 +149,26 @@ export async function registerPalfingerTraining(
 
       try {
         const fileBuffer = Buffer.from(await cvFile.arrayBuffer());
-        const fileBlob = new Blob([fileBuffer], { type: cvFile.type || "application/pdf" });
+        const fileBase64 = fileBuffer.toString("base64");
 
-        const hubFormData = new FormData();
-        hubFormData.append("file", fileBlob, cvFile.name);
-        hubFormData.append("folderName", "Capacitaciones PALFINGER 2026");
-        hubFormData.append("candidateName", rawFullName);
-        hubFormData.append("candidateDni", rawDni);
-        hubFormData.append("candidatePhone", rawPhone);
-        hubFormData.append("source", "palfinger");
+        const hubPayload = {
+          fileBase64,
+          fileName: cvFile.name,
+          mimeType: cvFile.type || "application/pdf",
+          folderName: "Capacitaciones PALFINGER 2026",
+          candidateName: rawFullName,
+          candidateDni: rawDni,
+          candidatePhone: rawPhone,
+          source: "palfinger",
+        };
 
         const hubRes = await fetch(`${rghubUrl}/api/integrations/ghapp/upload`, {
           method: "POST",
           headers: {
+            "Content-Type": "application/json",
             "x-api-key": rghubApiKey,
           },
-          body: hubFormData,
+          body: JSON.stringify(hubPayload),
           signal: AbortSignal.timeout(30000),
         });
 
@@ -285,22 +289,26 @@ export async function syncPalfingerCvAction(candidateId: string, formData: FormD
     const rghubApiKey = process.env.GHAPP_INTEGRATION_KEY || "rg_arca_ghapp_sync_2026";
 
     const fileBuffer = Buffer.from(await file.arrayBuffer());
-    const fileBlob = new Blob([fileBuffer], { type: file.type || "application/pdf" });
+    const fileBase64 = fileBuffer.toString("base64");
 
-    const hubFormData = new FormData();
-    hubFormData.append("file", fileBlob, file.name);
-    hubFormData.append("folderName", "Capacitaciones PALFINGER 2026");
-    hubFormData.append("candidateName", reg.fullName);
-    hubFormData.append("candidateDni", reg.dni);
-    hubFormData.append("candidatePhone", reg.phone);
-    hubFormData.append("source", "palfinger_admin_sync");
+    const hubPayload = {
+      fileBase64,
+      fileName: file.name,
+      mimeType: file.type || "application/pdf",
+      folderName: "Capacitaciones PALFINGER 2026",
+      candidateName: reg.fullName,
+      candidateDni: reg.dni,
+      candidatePhone: reg.phone,
+      source: "palfinger_admin_sync",
+    };
 
     const hubRes = await fetch(`${rghubUrl}/api/integrations/ghapp/upload`, {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         "x-api-key": rghubApiKey,
       },
-      body: hubFormData,
+      body: JSON.stringify(hubPayload),
       signal: AbortSignal.timeout(30000),
     });
 
