@@ -4,13 +4,13 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { updateCandidateStatus } from "@/lib/actions/positions";
-import { updatePalfingerStatusAction } from "@/lib/actions/palfinger";
+import { updatePalfingerStatusAction, syncPalfingerCvAction } from "@/lib/actions/palfinger";
 import type { PalfingerRegistration } from "@/lib/data/palfinger";
 import {
   Search, Phone, Download, Users, MapPin, Zap,
   ChevronDown, MessageCircle, Briefcase, FileSpreadsheet,
   Award, FileText, CheckCircle2, AlertTriangle, ExternalLink,
-  Layers, HardHat, Check
+  Layers, HardHat, Check, Upload, Loader2
 } from "lucide-react";
 import * as XLSX from "xlsx";
 
@@ -67,6 +67,30 @@ export default function AdminCandidatesView({
   const [activeStatus, setActiveStatus] = useState<Record<string, string>>({});
   const [activeNotes, setActiveNotes] = useState<Record<string, string>>({});
   const [openNotes, setOpenNotes] = useState<string | null>(null);
+  const [syncingCv, setSyncingCv] = useState<Record<string, boolean>>({});
+  const [syncedData, setSyncedData] = useState<Record<string, { cvFilePath: string; cvFileName: string }>>({});
+
+  async function handleUploadCv(candidateId: string, file?: File | null) {
+    if (!file) return;
+    setSyncingCv((prev) => ({ ...prev, [candidateId]: true }));
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await syncPalfingerCvAction(candidateId, fd);
+      if (res.success && res.cvFilePath) {
+        setSyncedData((prev) => ({
+          ...prev,
+          [candidateId]: { cvFilePath: res.cvFilePath!, cvFileName: res.cvFileName || file.name },
+        }));
+      } else {
+        alert(res.message || "Error al sincronizar con RG-Hub");
+      }
+    } catch (err: any) {
+      alert("Error inesperado: " + (err?.message || err));
+    } finally {
+      setSyncingCv((prev) => ({ ...prev, [candidateId]: false }));
+    }
+  }
 
   // Palfinger specific filters
   const [palfingerFilterProfile, setPalfingerFilterProfile] = useState<string>("");
@@ -467,25 +491,109 @@ export default function AdminCandidatesView({
                             Exp. PALFINGER: {reg.palfingerExperience}
                           </span>
                         </div>
-                        {reg.cvFilePath ? (
-                          <a
-                            href={reg.cvFilePath}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2.5 py-1 rounded-md transition-colors"
-                          >
-                            <FileText size={14} />
-                            <span>Descargar CV ({reg.cvFileName})</span>
-                          </a>
-                        ) : reg.cvFileName ? (
-                          <span
-                            className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-md"
-                            title="El postulante adjuntó este archivo pero el servidor RG-Hub no estuvo accesible al momento del registro."
-                          >
-                            <FileText size={14} />
-                            <span>CV: {reg.cvFileName} (Pendiente de sinc)</span>
-                          </span>
-                        ) : null}
+                        {(() => {
+                          const effectiveCvFilePath = syncedData[reg.id]?.cvFilePath ?? reg.cvFilePath;
+                          const effectiveCvFileName = syncedData[reg.id]?.cvFileName ?? reg.cvFileName;
+                          const isSyncingThis = Boolean(syncingCv[reg.id]);
+
+                          if (effectiveCvFilePath) {
+                            return (
+                              <div className="inline-flex items-center gap-2">
+                                <a
+                                  href={effectiveCvFilePath}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2.5 py-1 rounded-md transition-colors"
+                                >
+                                  <FileText size={14} />
+                                  <span>Descargar CV ({effectiveCvFileName})</span>
+                                </a>
+                                <label
+                                  htmlFor={`upload-cv-${reg.id}`}
+                                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-500 hover:text-zinc-800 cursor-pointer underline"
+                                  title="Reemplazar archivo"
+                                >
+                                  <Upload size={11} />
+                                  <span>{isSyncingThis ? "Subiendo..." : "Reemplazar"}</span>
+                                  <input
+                                    id={`upload-cv-${reg.id}`}
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    disabled={isSyncingThis}
+                                    onChange={(e) => handleUploadCv(reg.id, e.target.files?.[0])}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
+                            );
+                          }
+
+                          if (effectiveCvFileName) {
+                            return (
+                              <div className="inline-flex flex-wrap items-center gap-2">
+                                <span
+                                  className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-md"
+                                  title="El postulante adjuntó este archivo pero quedó pendiente de sincronización."
+                                >
+                                  <FileText size={14} />
+                                  <span>CV: {effectiveCvFileName} (Pendiente de sinc)</span>
+                                </span>
+                                <label
+                                  htmlFor={`upload-cv-${reg.id}`}
+                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-3 py-1 rounded-md cursor-pointer transition-colors shadow-2xs"
+                                >
+                                  {isSyncingThis ? (
+                                    <>
+                                      <Loader2 size={13} className="animate-spin text-emerald-700" />
+                                      <span>Sincronizando con RG-Hub...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Upload size={13} />
+                                      <span>Subir y sincronizar ahora</span>
+                                    </>
+                                  )}
+                                  <input
+                                    id={`upload-cv-${reg.id}`}
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    disabled={isSyncingThis}
+                                    onChange={(e) => handleUploadCv(reg.id, e.target.files?.[0])}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <label
+                              htmlFor={`upload-cv-${reg.id}`}
+                              className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 px-2.5 py-1 rounded-md cursor-pointer transition-colors"
+                              title="Adjuntar documento del postulante"
+                            >
+                              {isSyncingThis ? (
+                                <>
+                                  <Loader2 size={11} className="animate-spin" />
+                                  <span>Subiendo...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Upload size={11} />
+                                  <span>+ Adjuntar CV</span>
+                                </>
+                              )}
+                              <input
+                                id={`upload-cv-${reg.id}`}
+                                type="file"
+                                accept=".pdf,.doc,.docx"
+                                disabled={isSyncingThis}
+                                onChange={(e) => handleUploadCv(reg.id, e.target.files?.[0])}
+                                className="hidden"
+                              />
+                            </label>
+                          );
+                        })()}
                       </div>
 
                       {reg.recruiterNotes && openNotes !== reg.id && (

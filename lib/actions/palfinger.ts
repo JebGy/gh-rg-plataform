@@ -250,3 +250,73 @@ export async function updatePalfingerStatusAction(
   return { success: true };
 }
 
+export async function syncPalfingerCvAction(candidateId: string, formData: FormData) {
+  try {
+    const file = formData.get("file") as File | null;
+    if (!file || file.size === 0) {
+      return { success: false, message: "No se seleccionó ningún archivo." };
+    }
+
+    const { getPalfingerRegistrations, updatePalfingerCv } = await import("@/lib/data/palfinger");
+    const all = await getPalfingerRegistrations();
+    const reg = all.find((r) => r.id === candidateId);
+    if (!reg) {
+      return { success: false, message: "No se encontró el registro del participante." };
+    }
+
+    const rghubUrl =
+      process.env.RGHUB_API_URL ||
+      process.env.RGHUB_URL ||
+      "https://proyectoarca.ramirezgroup.com.pe";
+    const rghubApiKey = process.env.GHAPP_INTEGRATION_KEY || "rg_arca_ghapp_sync_2026";
+
+    const hubFormData = new FormData();
+    hubFormData.append("file", file);
+    hubFormData.append("folderName", "Capacitaciones PALFINGER 2026");
+    hubFormData.append("candidateName", reg.fullName);
+    hubFormData.append("candidateDni", reg.dni);
+    hubFormData.append("candidatePhone", reg.phone);
+    hubFormData.append("source", "palfinger_admin_sync");
+
+    const hubRes = await fetch(`${rghubUrl}/api/integrations/ghapp/upload`, {
+      method: "POST",
+      headers: {
+        "x-api-key": rghubApiKey,
+      },
+      body: hubFormData,
+    });
+
+    if (!hubRes.ok) {
+      const errJson = await hubRes.json().catch(() => ({}));
+      return {
+        success: false,
+        message: errJson.error || `Error al sincronizar con RG-Hub (HTTP ${hubRes.status})`,
+      };
+    }
+
+    const hubData = await hubRes.json();
+    const cvFilePath = hubData.document?.downloadUrl || hubData.document?.directUrl;
+    const cvFileName = hubData.document?.originalName || file.name;
+
+    if (!cvFilePath) {
+      return { success: false, message: "RG-Hub no devolvió la URL del archivo." };
+    }
+
+    await updatePalfingerCv(candidateId, cvFileName, cvFilePath);
+    revalidatePath("/admin");
+
+    return {
+      success: true,
+      message: "¡Documento sincronizado exitosamente con RG-Hub y MinIO!",
+      cvFilePath,
+      cvFileName,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error?.message || "Error inesperado al sincronizar.",
+    };
+  }
+}
+
+

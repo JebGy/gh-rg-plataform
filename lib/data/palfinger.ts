@@ -288,3 +288,54 @@ export async function updatePalfingerStatus(
 
   return null;
 }
+
+export async function updatePalfingerCv(
+  id: string,
+  cvFileName: string,
+  cvFilePath: string
+): Promise<PalfingerRegistration | null> {
+  let existingItem = memoryCache.get(id);
+
+  try {
+    const db = await getDb();
+    const candidate = await db.orm.public.Candidate.where({ id }).first();
+    if (candidate) {
+      let currentNotes: any = {};
+      try {
+        if (candidate.recruiterNotes) currentNotes = JSON.parse(candidate.recruiterNotes);
+      } catch {
+        currentNotes = {};
+      }
+
+      currentNotes.cvFileName = cvFileName;
+      currentNotes.cvFilePath = cvFilePath;
+
+      await db.orm.public.Candidate.where({ id }).update({
+        recruiterNotes: JSON.stringify(currentNotes),
+      });
+
+      const updated = parseCandidateToPalfinger({
+        ...candidate,
+        recruiterNotes: JSON.stringify(currentNotes),
+        updatedAt: new Date().toISOString(),
+      });
+      memoryCache.set(id, updated);
+      safeWriteTmpFile(Array.from(memoryCache.values()));
+      return updated;
+    }
+  } catch (err) {
+    console.warn("Could not update candidate CV in DB:", err);
+  }
+
+  if (existingItem) {
+    existingItem.cvFileName = cvFileName;
+    existingItem.cvFilePath = cvFilePath;
+    existingItem.updatedAt = new Date().toISOString();
+    memoryCache.set(id, existingItem);
+    safeWriteTmpFile(Array.from(memoryCache.values()));
+    return existingItem;
+  }
+
+  return null;
+}
+
